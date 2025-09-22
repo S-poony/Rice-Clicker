@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { GridControls } from "./components/GridControls";
 import { ClickableGrid } from "./components/ClickableGrid";
 import { LayerControls } from "./components/LayerControls";
 import { PesticideControl } from "./components/PesticideControl";
@@ -7,13 +6,12 @@ import { DownloadButton } from "./components/DownloadButton";
 import * as XLSX from "xlsx";
 
 export default function App() {
-  const [gridWidth, setGridWidth] = useState(5);
-  const [gridHeight, setGridHeight] = useState(5);
-  const [gridGenerated, setGridGenerated] = useState(false);
   const [layersToRemove, setLayersToRemove] = useState(0);
   const [pesticideChoice, setPesticideChoice] = useState<number | null>(null);
   const [workbook, setWorkbook] = useState<XLSX.WorkBook | null>(null);
   const [weekNumber, setWeekNumber] = useState(1);
+  const gridWidth = 5;
+  const gridHeight = 5;
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -40,10 +38,6 @@ export default function App() {
 
     loadInitialData();
   }, []);
-
-  const handleGenerateGrid = () => {
-    setGridGenerated(true);
-  };
 
   const handleDecrementLayers = () => {
     setLayersToRemove((prev) => Math.max(0, prev - 1));
@@ -89,38 +83,28 @@ export default function App() {
           </p>
         </div>
 
-        <GridControls
-          width={gridWidth}
-          height={gridHeight}
-          onWidthChange={setGridWidth}
-          onHeightChange={setGridHeight}
-          onGenerateGrid={handleGenerateGrid}
-        />
-
-        {gridGenerated && (
-          <div className="grid grid-cols-[1fr_auto] gap-6">
-            <div className="space-y-4">
-              <h3>Your Field</h3>
-              {layersToRemove === 0 && (
-                <PesticideControl
-                  onYes={() => handlePesticideChoice(1)}
-                  onNo={() => handlePesticideChoice(0)}
-                  disabled={pesticideChoice !== null}
-                />
-              )}
-              <ClickableGrid
-                width={gridWidth}
-                height={gridHeight}
-                layersToRemove={layersToRemove}
-                onDecrementLayers={handleDecrementLayers}
+        <div className="grid grid-cols-[1fr_auto] gap-6">
+          <div className="space-y-4">
+            <h3>Your Field</h3>
+            {layersToRemove === 0 && (
+              <PesticideControl
+                onYes={() => handlePesticideChoice(1)}
+                onNo={() => handlePesticideChoice(0)}
+                disabled={pesticideChoice !== null}
               />
-            </div>
-            <LayerControls
+            )}
+            <ClickableGrid
+              width={gridWidth}
+              height={gridHeight}
               layersToRemove={layersToRemove}
-              weekNumber={weekNumber}
+              onDecrementLayers={handleDecrementLayers}
             />
           </div>
-        )}
+          <LayerControls
+            layersToRemove={layersToRemove}
+            weekNumber={weekNumber}
+          />
+        </div>
         {workbook && <DownloadButton workbook={workbook} />}
       </div>
     </div>
