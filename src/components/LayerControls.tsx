@@ -5,44 +5,51 @@ import * as XLSX from "xlsx";
 interface LayerControlsProps {
   layersToRemove: number;
   onLayersToRemoveChange: (layers: number) => void;
-  gridClickCount: number;
+  pesticideChoice: number | null;
+  onPesticideChoiceMade: () => void;
+  workbook: XLSX.WorkBook | null;
 }
 
 export function LayerControls({
   layersToRemove,
   onLayersToRemoveChange,
-  gridClickCount,
+  pesticideChoice,
+  onPesticideChoiceMade,
+  workbook,
 }: LayerControlsProps) {
   const [weekNumber, setWeekNumber] = useState(1);
-  const offsetToMatchRow = 3;
+  const offsetToMatchRow = 2;
 
   useEffect(() => {
-    if (layersToRemove === 0) {
-      setWeekNumber((prev) => prev + 1);
-    }
-  }, [layersToRemove]);
+    const updateExcelAndLayers = async () => {
+      if (pesticideChoice !== null && workbook) {
+        try {
+          const worksheetName = "BPH";
+          const worksheet = workbook.Sheets[worksheetName];
 
-  useEffect(() => {
-    const readExcel = async () => {
-      try {
-        const response = await fetch("/BPH060225.xlsx");
-        const arrayBuffer = await response.arrayBuffer();
-        const data = new Uint8Array(arrayBuffer);
-        const workbook = XLSX.read(data, { type: "array" });
-        const worksheetName = "BPH";
-        const worksheet = workbook.Sheets[worksheetName];
-        const cellAddress = `B${weekNumber + offsetToMatchRow}`;
-        const cell = worksheet[cellAddress];
-        const rawValue = cell ? cell.v : 0;
-        const value = -1 * parseInt(String(rawValue), 10) || 0;
-        onLayersToRemoveChange(value);
-      } catch (error) {
-        console.error("Error reading Excel file:", error);
+          // Write pesticide choice
+          const writeCellAddress = `C${weekNumber + offsetToMatchRow}`;
+          XLSX.utils.sheet_add_aoa(worksheet, [[pesticideChoice]], {
+            origin: writeCellAddress,
+          });
+
+          // Read new layers value
+          const readCellAddress = `B${weekNumber + offsetToMatchRow + 1}`;
+          const cell = worksheet[readCellAddress];
+          const rawValue = cell ? cell.v : 0;
+          const value = -1 * parseInt(String(rawValue), 10) || 0;
+          onLayersToRemoveChange(value);
+
+          setWeekNumber((prev) => prev + 1);
+          onPesticideChoiceMade();
+        } catch (error) {
+          console.error("Error updating Excel file:", error);
+        }
       }
     };
 
-    readExcel();
-  }, [weekNumber, onLayersToRemoveChange]);
+    updateExcelAndLayers();
+  }, [pesticideChoice, workbook, weekNumber, onLayersToRemoveChange, onPesticideChoiceMade]);
 
   return (
     <div className="flex flex-col gap-4 p-6 bg-card rounded-lg border">
