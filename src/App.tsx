@@ -8,7 +8,7 @@ export default function App() {
   const [gridHeight, setGridHeight] = useState(5);
   const [gridGenerated, setGridGenerated] = useState(false);
   const [layersToRemove, setLayersToRemove] = useState(0);
-  const [isGridClicked, setIsGridClicked] = useState(false);
+  const [gridClickCount, setGridClickCount] = useState(0);
 
   const handleGenerateGrid = () => {
     setGridGenerated(true);
@@ -16,7 +16,7 @@ export default function App() {
 
   const handleDecrementLayers = () => {
     setLayersToRemove((prev) => Math.max(0, prev - 1));
-    setIsGridClicked(true);
+    setGridClickCount((prev) => prev + 1);
   };
 
   return (
@@ -52,7 +52,7 @@ export default function App() {
             <LayerControls
               layersToRemove={layersToRemove}
               onLayersToRemoveChange={setLayersToRemove}
-              isGridClicked={isGridClicked}
+              gridClickCount={gridClickCount}
             />
           </div>
         )}

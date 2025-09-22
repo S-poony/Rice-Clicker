@@ -44,14 +44,16 @@
             "recharts": "^2.15.2",
             "sonner": "^2.0.3",
             "tailwind-merge": "*",
-            "vaul": "^1.1.2"
+            "vaul": "^1.1.2",
+            "xlsx": "^0.18.5"
       },
       "devDependencies": {
             "@types/node": "^20.10.0",
             "@types/react": "^19.1.13",
             "@types/react-dom": "^19.1.9",
+            "@types/xlsx": "^0.0.35",
             "@vitejs/plugin-react-swc": "^3.10.2",
-            "vite": "6.3.5"
+            "vite": "^6.3.6"
       },
       "scripts": {
             "dev": "vite",
