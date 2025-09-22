@@ -13,21 +13,32 @@ export default function App() {
   const [layersToRemove, setLayersToRemove] = useState(0);
   const [pesticideChoice, setPesticideChoice] = useState<number | null>(null);
   const [workbook, setWorkbook] = useState<XLSX.WorkBook | null>(null);
+  const [weekNumber, setWeekNumber] = useState(1);
 
   useEffect(() => {
-    const loadWorkbook = async () => {
+    const loadInitialData = async () => {
       try {
         const response = await fetch("/BPH060225.xlsx");
         const arrayBuffer = await response.arrayBuffer();
         const data = new Uint8Array(arrayBuffer);
         const wb = XLSX.read(data, { type: "array" });
         setWorkbook(wb);
+
+        // Read initial layers to remove value
+        const worksheetName = "BPH";
+        const worksheet = wb.Sheets[worksheetName];
+        const offsetToMatchRow = 3;
+        const readCellAddress = `B${weekNumber + offsetToMatchRow}`;
+        const cell = worksheet[readCellAddress];
+        const rawValue = cell ? cell.v : 0;
+        const value = -1 * parseInt(String(rawValue), 10) || 0;
+        setLayersToRemove(value);
       } catch (error) {
-        console.error("Error loading Excel file:", error);
+        console.error("Error loading Excel file or initial data:", error);
       }
     };
 
-    loadWorkbook();
+    loadInitialData();
   }, []);
 
   const handleGenerateGrid = () => {
@@ -39,7 +50,32 @@ export default function App() {
   };
 
   const handlePesticideChoice = (choice: number) => {
-    setPesticideChoice(choice);
+    if (workbook) {
+      try {
+        const worksheetName = "BPH";
+        const worksheet = workbook.Sheets[worksheetName];
+        const offsetToMatchRow = 3;
+
+        // Write pesticide choice for the current week
+        const writeCellAddress = `C${weekNumber + offsetToMatchRow}`;
+        XLSX.utils.sheet_add_aoa(worksheet, [[choice]], {
+          origin: writeCellAddress,
+        });
+
+        // Determine the next week and read its value
+        const nextWeekNumber = weekNumber + 1;
+        const readCellAddress = `B${nextWeekNumber + offsetToMatchRow}`;
+        const cell = worksheet[readCellAddress];
+        const rawValue = cell ? cell.v : 0;
+        const value = -1 * parseInt(String(rawValue), 10) || 0;
+
+        // Update state for the next turn
+        setLayersToRemove(value);
+        setWeekNumber(nextWeekNumber);
+      } catch (error) {
+        console.error("Error updating Excel file:", error);
+      }
+    }
   };
 
   return (
@@ -81,10 +117,7 @@ export default function App() {
             </div>
             <LayerControls
               layersToRemove={layersToRemove}
-              onLayersToRemoveChange={setLayersToRemove}
-              pesticideChoice={pesticideChoice}
-              onPesticideChoiceMade={() => setPesticideChoice(null)}
-              workbook={workbook}
+              weekNumber={weekNumber}
             />
           </div>
         )}
