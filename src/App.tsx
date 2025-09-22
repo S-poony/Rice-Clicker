@@ -78,8 +78,9 @@ export default function App() {
         <div className="text-center space-y-2">
           <h1>Interactive Grid Builder</h1>
           <p className="text-muted-foreground">
-            Create a customizable grid where squares progress from Green →
-            Yellow → Red and cannot go back
+            This field is full of Brown Plant Hoppers, a common pest in rice. 
+            But there are also wasps and spiders that prey on them.
+            You can only see the state of your rice. Use pesticides wisely.
           </p>
         </div>
 
