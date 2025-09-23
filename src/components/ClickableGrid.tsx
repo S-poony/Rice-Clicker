@@ -1,43 +1,41 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+
+export type ButtonState = 0 | 1 | 2;
 
 interface ClickableGridProps {
   width: number;
   height: number;
   layersToRemove: number;
   onDecrementLayers: () => void;
+  buttonStates: ButtonState[];
+  setButtonStates: (states: ButtonState[]) => void;
 }
-
-// 0 = green, 1 = yellow, 2 = red
-type ButtonState = 0 | 1 | 2;
 
 export function ClickableGrid({
   width,
   height,
   layersToRemove,
   onDecrementLayers,
+  buttonStates,
+  setButtonStates,
 }: ClickableGridProps) {
-  // Initialize grid with all buttons in green state (0)
-  const [buttonStates, setButtonStates] = useState<ButtonState[]>([]);
-
   // Reset grid when dimensions change
   useEffect(() => {
     const totalButtons = width * height;
     setButtonStates(new Array(totalButtons).fill(0));
-  }, [width, height]);
+  }, [width, height, setButtonStates]);
 
   const clickButton = (index: number) => {
-    setButtonStates((prev) => {
-      const newStates = [...prev];
-      // Only advance if not already at red (2)
-      if (newStates[index] < 2 && layersToRemove > 0) {
-        newStates[index] = (newStates[index] + 1) as ButtonState;
-        // Decrement layers counter when a square is clicked
-        if (layersToRemove > 0) {
-          onDecrementLayers();
-        }
+    const newStates = [...buttonStates];
+    // Only advance if not already at red (2)
+    if (newStates[index] < 2 && layersToRemove > 0) {
+      newStates[index] = (newStates[index] + 1) as ButtonState;
+      // Decrement layers counter when a square is clicked
+      if (layersToRemove > 0) {
+        onDecrementLayers();
       }
-      return newStates;
-    });
+    }
+    setButtonStates(newStates);
   };
 
   const getButtonColor = (state: ButtonState) => {

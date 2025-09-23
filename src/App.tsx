@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ClickableGrid } from "./components/ClickableGrid";
+import { ClickableGrid, ButtonState } from "./components/ClickableGrid";
 import { LayerControls } from "./components/LayerControls";
 import { PesticideControl } from "./components/PesticideControl";
 import { DownloadButton } from "./components/DownloadButton";
@@ -16,8 +16,13 @@ export default function App() {
   const [isGameOver, setIsGameOver] = useState(false);
   const gridWidth = 5;
   const gridHeight = 5;
+  const [buttonStates, setButtonStates] = useState<ButtonState[]>(
+    new Array(gridWidth * gridHeight).fill(0)
+  );
 
-  const score = 100 - layersRemoved //not the cleanest score function
+  const greenCells = buttonStates.filter((state) => state === 0).length;
+  const yellowCells = buttonStates.filter((state) => state === 1).length;
+  const score = 3 * greenCells + yellowCells;
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -49,7 +54,11 @@ export default function App() {
     if (weekNumber === 10 && layersToRemove === 0) {
       setIsGameOver(true);
     }
-  }, [layersToRemove, weekNumber]);
+    const allRed = buttonStates.every((state) => state === 2);
+    if (allRed) {
+      setIsGameOver(true);
+    }
+  }, [layersToRemove, weekNumber, buttonStates]);
 
   const handleDecrementLayers = () => {
     setLayersToRemove((prev) => Math.max(0, prev - 1));
@@ -120,6 +129,8 @@ export default function App() {
               height={gridHeight}
               layersToRemove={layersToRemove}
               onDecrementLayers={handleDecrementLayers}
+              buttonStates={buttonStates}
+              setButtonStates={setButtonStates}
             />
           </div>
           <div className="space-y-6">
@@ -139,6 +150,7 @@ export default function App() {
         isOpen={isGameOver}
         score={score}
         pesticideSprayCount={pesticideSprayCount}
+        weekNumber={weekNumber}
         onShare={() => alert("Score copied to clipboard!")}
         onClose={() => setIsGameOver(false)}
       />

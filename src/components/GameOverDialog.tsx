@@ -13,6 +13,7 @@ interface GameOverDialogProps {
   isOpen: boolean;
   score: number;
   pesticideSprayCount: number;
+  weekNumber: number;
   onShare: () => void;
   onClose: () => void;
 }
@@ -21,6 +22,7 @@ export function GameOverDialog({
   isOpen,
   score,
   pesticideSprayCount,
+  weekNumber,
   onShare,
   onClose,
 }: GameOverDialogProps) {
@@ -33,14 +35,17 @@ export function GameOverDialog({
     onShare();
   };
 
+  const description =
+    weekNumber >= 10
+      ? "You have completed all 10 weeks. Here is your final score."
+      : `You have completed ${weekNumber} weeks. Here is your final score.`;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Game Over!</DialogTitle>
-          <DialogDescription>
-            You have completed all 10 weeks. Here is your final score.
-          </DialogDescription>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="flex justify-between items-center">
