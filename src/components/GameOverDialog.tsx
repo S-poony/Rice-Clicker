@@ -1,0 +1,64 @@
+import React from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "./ui/dialog";
+import { Button } from "./ui/button";
+
+interface GameOverDialogProps {
+  isOpen: boolean;
+  score: number;
+  pesticideSprayCount: number;
+  onShare: () => void;
+  onClose: () => void;
+}
+
+export function GameOverDialog({
+  isOpen,
+  score,
+  pesticideSprayCount,
+  onShare,
+  onClose,
+}: GameOverDialogProps) {
+  const shareText = `I finished the game with a score of ${score.toFixed(
+    2
+  )} and used pesticide ${pesticideSprayCount} times!`;
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(shareText);
+    onShare();
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Game Over!</DialogTitle>
+          <DialogDescription>
+            You have completed all 10 weeks. Here is your final score.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <div className="flex justify-between items-center">
+            <p className="font-medium">Final Score:</p>
+            <p className="text-2xl font-bold">{score.toFixed(2)}</p>
+          </div>
+          <div className="flex justify-between items-center">
+            <p className="font-medium">Total Pesticide Sprays:</p>
+            <p className="text-2xl font-bold">{pesticideSprayCount}</p>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button onClick={handleShare}>Share Score</Button>
+          <Button variant="outline" onClick={onClose}>
+            Close
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
