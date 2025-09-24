@@ -11,7 +11,7 @@ const initialPestCount = 90;
 const initialMutantPestCount = 10;
 const initialParasitoidCount = 12;
 const initialPredatorCount = 4;
-const pestReproductionConstant = 0;
+const outsidePests = 4;
 const parasitoidReproductionRate = 1.25;
 const predatorReproductionRate = 1.1;
 const ReproductionBoost = 1.6;
@@ -91,48 +91,51 @@ export default function App() {
       setPesticideSprayCount((prev) => prev + 1);
     }
 
-    // --- Start of Simulation Logic ---
+        // --- Start of Simulation Logic ---
+    // 1. Determine reproduction rates based on pesticide history
     let pestReproductionRate = (2 * 7) / 10.42;
     let mutantPestReproductionRate = (2 * 7) / 10.42;
-
     if (pesticideSprayCount > 0) {
       pestReproductionRate = ReproductionBoost;
       mutantPestReproductionRate = MutantPestReproductionBoost;
     }
 
+    // 2. Calculate predation
     const pestTotal = pestCount + mutantPestCount;
     const paraEat = parasitoidCount * parasitoidConsumptionRate;
     const predEat = predatorCount * predatorConsumptionRate;
-    const pestEaten = Math.min(pestTotal, paraEat + predEat);
-    const predationRate = pestTotal > 0 ? 1 - pestEaten / pestTotal : 1;
+    const totalPestsEaten = Math.min(pestTotal, paraEat + predEat);
+    
+    // Pests and mutants are eaten proportionally to their numbers
+    const proportionOfPests = pestTotal > 0 ? pestCount / pestTotal : 0;
+    const proportionOfMutants = pestTotal > 0 ? mutantPestCount / pestTotal : 0;
+    
+    const pestsEaten = totalPestsEaten * proportionOfPests;
+    const mutantsEaten = totalPestsEaten * proportionOfMutants;
 
-    let nextPestCount = pestCount;
-    let nextMutantPestCount = mutantPestCount;
-    let nextParasitoidCount = parasitoidCount;
-    let nextPredatorCount = predatorCount;
+    const pestsAfterPredation = pestCount - pestsEaten;
+    const mutantsAfterPredation = mutantPestCount - mutantsEaten;
 
-    if (pesticideApplied) {
-      nextPestCount =
-        pestCount * predationRate * pestReproductionRate * pestSurvivalRate +
-        pestReproductionConstant;
-      nextMutantPestCount =
-        mutantPestCount *
-          mutantPestReproductionRate *
-          MutantPestPesticideSurvivalRate +
-        pestReproductionConstant;
-      nextParasitoidCount =
-        parasitoidCount * parasitoidReproductionRate * parasitoidSurvivalRate;
-      nextPredatorCount =
-        predatorCount * predatorReproductionRate * predatorSurvivalRate;
-    } else {
-      nextPestCount =
-        pestCount * predationRate * pestReproductionRate +
-        pestReproductionConstant;
-      nextMutantPestCount =
-        mutantPestCount * mutantPestReproductionRate + pestReproductionConstant;
-      nextParasitoidCount = parasitoidCount * parasitoidReproductionRate;
-      nextPredatorCount = predatorCount * predatorReproductionRate;
-    }
+    // 3. Calculate survivors after pesticide application (if any)
+    const pestSurvival = pesticideApplied ? pestSurvivalRate : 1;
+    const parasitoidSurvival = pesticideApplied ? parasitoidSurvivalRate : 1;
+    const predatorSurvival = pesticideApplied ? predatorSurvivalRate : 1;
+    // Mutants always survive pesticides in this model
+    const mutantSurvival = pesticideApplied ? MutantPestPesticideSurvivalRate : 1;
+
+    const survivingPests = pestsAfterPredation * pestSurvival;
+    const survivingMutants = mutantsAfterPredation * mutantSurvival;
+    const survivingParasitoids = parasitoidCount * parasitoidSurvival;
+    const survivingPredators = predatorCount * predatorSurvival;
+
+    // 4. Calculate new population from survivors and reproduction
+    const nextPestCount =
+      survivingPests * pestReproductionRate + outsidePests;
+    const nextMutantPestCount =
+      survivingMutants * mutantPestReproductionRate + outsidePests;
+    const nextParasitoidCount =
+      survivingParasitoids * parasitoidReproductionRate;
+    const nextPredatorCount = survivingPredators * predatorReproductionRate;
 
     setPestCount(nextPestCount);
     setMutantPestCount(nextMutantPestCount);
