@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
-import * as XLSX from "xlsx";
 
 interface LayerControlsProps {
   layersToRemove: number;
