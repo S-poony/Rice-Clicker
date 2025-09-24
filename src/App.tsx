@@ -144,7 +144,7 @@ export default function App() {
 
     const nextPestTotal = nextPestCount + nextMutantPestCount;
     const cropsEaten = nextPestTotal * pestConsumptionRate;
-    const newLayersToRemove = Math.ceil(cropsEaten / cropsPerLayer);
+    const newLayersToRemove = Math.ceil(((cropsEaten / cropsPerLayer))/(((gridWidth*gridHeight)*3) / (greenCells * 3 +yellowCells)));
 
     setLayersToRemove(newLayersToRemove);
     setWeekNumber((prev) => prev + 1);
