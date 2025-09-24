@@ -2,16 +2,32 @@ import { useState, useEffect } from "react";
 import { ClickableGrid, ButtonState } from "./components/ClickableGrid";
 import { LayerControls } from "./components/LayerControls";
 import { PesticideControl } from "./components/PesticideControl";
-import { DownloadButton } from "./components/DownloadButton";
 import { Scoreboard } from "./components/Scoreboard";
 import { GameOverDialog } from "./components/GameOverDialog";
-import * as XLSX from "xlsx";
+
+// Simulation Constants
+const cropsPerLayer = 30;
+const initialPestCount = 90;
+const initialMutantPestCount = 10;
+const initialParasitoidCount = 12;
+const initialPredatorCount = 4;
+const pestReproductionConstant = 0;
+const parasitoidReproductionRate = 1.25;
+const predatorReproductionRate = 1.1;
+const ReproductionBoost = 1.6;
+const MutantPestReproductionBoost = 1.8;
+const pestSurvivalRate = 0.3;
+const parasitoidSurvivalRate = 0.3;
+const predatorSurvivalRate = 0.5;
+const MutantPestPesticideSurvivalRate = 1;
+const pestConsumptionRate = 0.8;
+const parasitoidConsumptionRate = 1.1;
+const predatorConsumptionRate = 2.5;
 
 export default function App() {
   const [layersToRemove, setLayersToRemove] = useState(0);
   const [layersRemoved, setLayersRemoved] = useState(0);
   const [pesticideSprayCount, setPesticideSprayCount] = useState(0);
-  const [workbook, setWorkbook] = useState<XLSX.WorkBook | null>(null);
   const [weekNumber, setWeekNumber] = useState(1);
   const [isGameOver, setIsGameOver] = useState(false);
   const gridWidth = 5;
@@ -20,35 +36,35 @@ export default function App() {
     new Array(gridWidth * gridHeight).fill(0)
   );
 
+  // Simulation state
+  const [pestCount, setPestCount] = useState(initialPestCount);
+  const [mutantPestCount, setMutantPestCount] = useState(initialMutantPestCount);
+  const [parasitoidCount, setParasitoidCount] = useState(
+    initialParasitoidCount
+  );
+  const [predatorCount, setPredatorCount] = useState(initialPredatorCount);
+
+  useEffect(() => {
+    console.log({
+      week: weekNumber,
+      pests: pestCount,
+      mutants: mutantPestCount,
+      parasitoids: parasitoidCount,
+      predators: predatorCount,
+    });
+  }, [weekNumber, pestCount, mutantPestCount, parasitoidCount, predatorCount]);
+
   const greenCells = buttonStates.filter((state) => state === 0).length;
   const yellowCells = buttonStates.filter((state) => state === 1).length;
   const score = 3 * greenCells + yellowCells;
 
   useEffect(() => {
-    const loadInitialData = async () => {
-      try {
-        const response = await fetch("/BPH060225.xlsx");
-        const arrayBuffer = await response.arrayBuffer();
-        const data = new Uint8Array(arrayBuffer);
-        const wb = XLSX.read(data, { type: "array" });
-        setWorkbook(wb);
-
-        // Read initial layers to remove value
-        const worksheetName = "BPH";
-        const worksheet = wb.Sheets[worksheetName];
-        const offsetToMatchRow = 3;
-        const readCellAddress = `B${weekNumber + offsetToMatchRow}`;
-        const cell = worksheet[readCellAddress];
-        const rawValue = cell ? cell.v : 0;
-        const value = -1 * parseInt(String(rawValue), 10) || 0;
-        setLayersToRemove(value);
-      } catch (error) {
-        console.error("Error loading Excel file or initial data:", error);
-      }
-    };
-
-    loadInitialData();
-  }, []);
+    // Initial layers to remove calculation
+    const pestTotal = pestCount + mutantPestCount;
+    const cropsEaten = pestTotal * pestConsumptionRate;
+    const initialLayers = Math.ceil(cropsEaten / cropsPerLayer);
+    setLayersToRemove(initialLayers);
+  }, []); // Runs only once on mount
 
   useEffect(() => {
     if (weekNumber === 10 && layersToRemove === 0) {
@@ -65,42 +81,71 @@ export default function App() {
     setLayersRemoved((prev) => prev + 1);
   };
 
-  const handlePesticideChoice = (choice: number) => {
-    if (workbook) {
-      if (choice === 1) {
-        setPesticideSprayCount((prev) => prev + 1);
-      }
-
-      if (weekNumber >= 10) {
-        setIsGameOver(true);
-        return;
-      }
-
-      try {
-        const worksheetName = "BPH";
-        const worksheet = workbook.Sheets[worksheetName];
-        const offsetToMatchRow = 3;
-
-        // Write pesticide choice for the current week
-        const writeCellAddress = `C${weekNumber + offsetToMatchRow}`;
-        XLSX.utils.sheet_add_aoa(worksheet, [[choice]], {
-          origin: writeCellAddress,
-        });
-
-        // Determine the next week and read its value
-        const nextWeekNumber = weekNumber + 1;
-        const readCellAddress = `B${nextWeekNumber + offsetToMatchRow}`;
-        const cell = worksheet[readCellAddress];
-        const rawValue = cell ? cell.v : 0;
-        const value = -1 * parseInt(String(rawValue), 10) || 0;
-
-        // Update state for the next turn
-        setLayersToRemove(value);
-        setWeekNumber(nextWeekNumber);
-      } catch (error) {
-        console.error("Error updating Excel file:", error);
-      }
+  const handlePesticideChoice = (pesticideApplied: boolean) => {
+    if (weekNumber >= 10) {
+      setIsGameOver(true);
+      return;
     }
+
+    if (pesticideApplied) {
+      setPesticideSprayCount((prev) => prev + 1);
+    }
+
+    // --- Start of Simulation Logic ---
+    let pestReproductionRate = (2 * 7) / 10.42;
+    let mutantPestReproductionRate = (2 * 7) / 10.42;
+
+    if (pesticideSprayCount > 0) {
+      pestReproductionRate = ReproductionBoost;
+      mutantPestReproductionRate = MutantPestReproductionBoost;
+    }
+
+    const pestTotal = pestCount + mutantPestCount;
+    const paraEat = parasitoidCount * parasitoidConsumptionRate;
+    const predEat = predatorCount * predatorConsumptionRate;
+    const pestEaten = Math.min(pestTotal, paraEat + predEat);
+    const predationRate = pestTotal > 0 ? 1 - pestEaten / pestTotal : 1;
+
+    let nextPestCount = pestCount;
+    let nextMutantPestCount = mutantPestCount;
+    let nextParasitoidCount = parasitoidCount;
+    let nextPredatorCount = predatorCount;
+
+    if (pesticideApplied) {
+      nextPestCount =
+        pestCount * predationRate * pestReproductionRate * pestSurvivalRate +
+        pestReproductionConstant;
+      nextMutantPestCount =
+        mutantPestCount *
+          mutantPestReproductionRate *
+          MutantPestPesticideSurvivalRate +
+        pestReproductionConstant;
+      nextParasitoidCount =
+        parasitoidCount * parasitoidReproductionRate * parasitoidSurvivalRate;
+      nextPredatorCount =
+        predatorCount * predatorReproductionRate * predatorSurvivalRate;
+    } else {
+      nextPestCount =
+        pestCount * predationRate * pestReproductionRate +
+        pestReproductionConstant;
+      nextMutantPestCount =
+        mutantPestCount * mutantPestReproductionRate + pestReproductionConstant;
+      nextParasitoidCount = parasitoidCount * parasitoidReproductionRate;
+      nextPredatorCount = predatorCount * predatorReproductionRate;
+    }
+
+    setPestCount(nextPestCount);
+    setMutantPestCount(nextMutantPestCount);
+    setParasitoidCount(nextParasitoidCount);
+    setPredatorCount(nextPredatorCount);
+
+    const nextPestTotal = nextPestCount + nextMutantPestCount;
+    const cropsEaten = nextPestTotal * pestConsumptionRate;
+    const newLayersToRemove = Math.ceil(cropsEaten / cropsPerLayer);
+
+    setLayersToRemove(newLayersToRemove);
+    setWeekNumber((prev) => prev + 1);
+    // --- End of Simulation Logic ---
   };
 
   return (
@@ -120,8 +165,8 @@ export default function App() {
             <h3>Your Field</h3>
             {layersToRemove === 0 && !isGameOver && (
               <PesticideControl
-                onYes={() => handlePesticideChoice(1)}
-                onNo={() => handlePesticideChoice(0)}
+                onYes={() => handlePesticideChoice(true)}
+                onNo={() => handlePesticideChoice(false)}
               />
             )}
             <ClickableGrid
@@ -144,7 +189,7 @@ export default function App() {
             />
           </div>
         </div>
-        {workbook && <DownloadButton workbook={workbook} />}
+        {/* The DownloadButton is no longer needed as we are not using the excel file */}
       </div>
       <GameOverDialog
         isOpen={isGameOver}
