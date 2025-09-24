@@ -1,0 +1,67 @@
+// INITIAL PARAMETERS FOR THE SIMULATION
+
+const initialPestCount = 90
+const initialMutantPestCount = 10
+const initialParasitoidCount = 12
+const initialPredatorCount = 4
+
+var pestReproductionRate = 2*7/10.42
+const parasitoidReproductionRate = 1.25
+const predatorReproductionRate = 1.1
+
+const ReproductionBoost = 1.8 //only for pests, when pesticide has been applied
+
+const pestSurvivalRate = 0.3
+const parasitoidSurvivalRate = 0.3
+const predatorSurvivalRate = 0.5
+
+const pestResistance = 0.3
+const parasitoidResistance = 0.3
+const predatorResistance = 0.5
+
+const pestConsumptionRate = 0.8
+const parasitoidConsumptionRate = 1.1
+const predatorConsumptionRate = 2.5
+
+// some insects are resistant to pesticides, they have differents stats. 
+// If not specified, they have the same stats as normal insects
+
+const MutantPestReproductionBoost = 0.5 //only for mutant pests when pesticide is applied
+const MutantPestPesticideResistance = 1 //only for mutant pests, they are completely resistant
+const MutantParasitoidResistance = 0.4 //only for mutant parasitoids, currently not used
+
+// SIMULATION
+
+var pestCount = initialPestCount;
+var mutantPestCount = initialMutantPestCount;
+var pestTotal = pestCount + mutantPestCount;
+var parasitoidCount = initialParasitoidCount;
+var predatorCount = initialPredatorCount;
+
+
+var paraEat = parasitoidCount * parasitoidConsumptionRate;
+var predEat = predatorCount * predatorConsumptionRate;
+var pestEaten = Math.min (pestTotal, (paraEat + predEat)); // parasitoid and predator consumption cannot exceed pest population
+
+var predationRate = pestCount>0?  pestEaten/pestCount : 0;
+
+
+var pesticideApplied = false; 
+// whether pesticide was applied this week
+// pesticideApplied changes when user presses yes or no in the "Spray Pesticide ?" UI
+
+function simulateWeek(weekNumber) {
+    // 
+    if (pesticideSprayCount > 0) { // pesticideSprayCount = number of times pesticide was applied so far
+        pestReproductionRate = ReproductionBoost;
+    }
+
+    if (pesticideApplied = true) {
+
+    }
+
+    if (pesticideApplied = false) {
+
+    }
+
+}
