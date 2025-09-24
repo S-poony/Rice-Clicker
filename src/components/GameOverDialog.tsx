@@ -28,7 +28,9 @@ export function GameOverDialog({
 }: GameOverDialogProps) {
   const shareText = `I finished the game with a score of ${score.toFixed(
     2
-  )} and used pesticide ${pesticideSprayCount} times!`;
+  )} and used pesticide ${pesticideSprayCount} times! 
+  
+Try to beat me here: https://s-poony.github.io/Rice-Clicker/`;
 
   const handleShare = () => {
     navigator.clipboard.writeText(shareText);

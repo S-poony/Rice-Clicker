@@ -190,6 +190,8 @@ export default function App() {
               score={score}
               pesticideSprayCount={pesticideSprayCount}
             />
+            < h3 > Want to learn more? Visit the <a href="https://github.com/S-poony/Rice-Clicker">project repository</a> </h3>
+       
           </div>
         </div>
         {/* The DownloadButton is no longer needed as we are not using the excel file */}
