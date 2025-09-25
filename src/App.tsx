@@ -158,7 +158,7 @@ export default function App() {
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center space-y-2">
-          <h1>Rice invasion</h1>
+          <h1>Rice Clicker</h1>
           <p className="text-muted-foreground">
             This field is full of Brown Plant Hoppers, a common pest in rice.
             But there are also wasps and spiders that prey on them. Use pesticides wisely. 
