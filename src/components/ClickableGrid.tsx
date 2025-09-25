@@ -54,13 +54,13 @@ export function ClickableGrid({
   const getStateLabel = (state: ButtonState) => {
     switch (state) {
       case 0:
-        return "Green";
+        return "Healthy";
       case 1:
-        return "Yellow";
+        return "Damaged";
       case 2:
-        return "Red";
+        return "Dead";
       default:
-        return "Green";
+        return "Healthy";
     }
   };
 
@@ -90,7 +90,7 @@ export function ClickableGrid({
               ${getButtonColor(state)}
               ${state === 2 ? 'cursor-not-allowed opacity-90' : 'cursor-pointer'}
             `}
-            title={`Button ${Math.floor(index / width) + 1},${(index % width) + 1} - ${getStateLabel(state)}${state === 2 ? ' (Final state)' : ''}`}
+            title={`Rice pad ${Math.floor(index / width) + 1},${(index % width) + 1} - ${getStateLabel(state)}${state === 2 ? ' ' : ''}`}
             disabled={state === 2}
           />
         ))}
