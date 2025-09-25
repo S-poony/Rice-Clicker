@@ -115,8 +115,7 @@ Just remove the Math.random if you want a fixed starting population.
 
 ## How to play 
 
-Click here ! 
-s-poony.github.io/Rice-Clicker/
+[Click here!](s-poony.github.io/Rice-Clicker/)
 
 ---
 
@@ -164,4 +163,4 @@ s-poony.github.io/Rice-Clicker/
 
 ---
 
-![Blender visualization from the simulation data #2](img/BPH_dataviz_2.png )
+![Blender visualization from the simulation data #2](img/BPH_dataviz_3.png )
