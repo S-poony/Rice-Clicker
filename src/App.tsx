@@ -4,6 +4,8 @@ import { LayerControls } from "./components/LayerControls";
 import { PesticideControl } from "./components/PesticideControl";
 import { Scoreboard } from "./components/Scoreboard";
 import { GameOverDialog } from "./components/GameOverDialog";
+import { Popup } from "./components/Tutorial";
+
 
 // Simulation Constants
 const cropsPerLayer = 30;
@@ -156,6 +158,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-background p-4">
+        <Popup />
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center space-y-2">
           <h1>Rice Clicker</h1>
