@@ -7,11 +7,11 @@ import { GameOverDialog } from "./components/GameOverDialog";
 
 // Simulation Constants
 const cropsPerLayer = 30;
-const initialPestCount = 90;
-const initialMutantPestCount = 10;
-const initialParasitoidCount = 12;
-const initialPredatorCount = 4;
-const averageOutsidePests = 4;
+const initialPestCount = Math.random()*200;
+const initialMutantPestCount = Math.random()*20;
+const initialParasitoidCount = Math.random()*24;
+const initialPredatorCount = Math.random()*8;
+const averageOutsidePests = 6;
 const parasitoidReproductionRate = 1.25;
 const predatorReproductionRate = 1.1;
 const ReproductionBoost = 1.6;
