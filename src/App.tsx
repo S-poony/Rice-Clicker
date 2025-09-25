@@ -57,7 +57,7 @@ export default function App() {
 
   const greenCells = buttonStates.filter((state) => state === 0).length;
   const yellowCells = buttonStates.filter((state) => state === 1).length;
-  const score = 3 * greenCells + yellowCells;
+  const score = weekNumber * (greenCells + yellowCells/2);
 
   useEffect(() => {
     // Initial layers to remove calculation
