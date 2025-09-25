@@ -161,8 +161,7 @@ export default function App() {
           <h1>Rice invasion</h1>
           <p className="text-muted-foreground">
             This field is full of Brown Plant Hoppers, a common pest in rice.
-            But there are also wasps and spiders that prey on them. You can only
-            see the state of your rice. Use pesticides wisely. 
+            But there are also wasps and spiders that prey on them. Use pesticides wisely. 
           </p>
         </div>
 
@@ -190,7 +189,9 @@ export default function App() {
               weekNumber={weekNumber}
             />
             {weekNumber > 1 && (
-               <h3> BPH eaten by wasps and spiders: {totalPestsEaten} </h3>
+                <p className="text-muted-foreground">
+                BPH eaten by wasps and spiders: {totalPestsEaten} 
+                </p>
             )}
             <Scoreboard
               score={score}

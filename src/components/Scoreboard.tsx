@@ -9,9 +9,8 @@ interface ScoreboardProps {
 export function Scoreboard({ score, pesticideSprayCount }: ScoreboardProps) {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Scoreboard</CardTitle>
-      </CardHeader>
+      <div className="flex flex-col gap-2">
+        </div>
       <CardContent className="space-y-4">
         <div className="flex justify-between">
           <p className="font-medium">Score:</p>
