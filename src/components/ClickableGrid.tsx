@@ -95,17 +95,6 @@ export function ClickableGrid({
           />
         ))}
       </div>
-
-      <div className="space-y-1">
-        <p className="text-muted-foreground">
-          Click the rice pads to match the simulation
-        </p>
-        {layersToRemove > 0 && (
-          <p className="text-muted-foreground">
-            Layers remaining: {layersToRemove}
-          </p>
-        )}
-      </div>
     </div>
   );
 }

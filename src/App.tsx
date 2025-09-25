@@ -30,6 +30,7 @@ export default function App() {
   const [pesticideSprayCount, setPesticideSprayCount] = useState(0);
   const [weekNumber, setWeekNumber] = useState(1);
   const [isGameOver, setIsGameOver] = useState(false);
+  const [totalPestsEaten, setTotalPestsEaten] = useState(0);
   const gridWidth = 5;
   const gridHeight = 5;
   const [buttonStates, setButtonStates] = useState<ButtonState[]>(
@@ -148,6 +149,7 @@ export default function App() {
 
     setLayersToRemove(newLayersToRemove);
     setWeekNumber((prev) => prev + 1);
+    setTotalPestsEaten(Math.ceil(totalPestsEaten));
     // --- End of Simulation Logic ---
   };
 
@@ -159,7 +161,7 @@ export default function App() {
           <p className="text-muted-foreground">
             This field is full of Brown Plant Hoppers, a common pest in rice.
             But there are also wasps and spiders that prey on them. You can only
-            see the state of your rice. Use pesticides wisely.
+            see the state of your rice. Use pesticides wisely. 
           </p>
         </div>
 
@@ -186,6 +188,9 @@ export default function App() {
               layersToRemove={layersToRemove}
               weekNumber={weekNumber}
             />
+            {weekNumber > 1 && (
+               <h3> BPH eaten by wasps and spiders: {totalPestsEaten} </h3>
+            )}
             <Scoreboard
               score={score}
               pesticideSprayCount={pesticideSprayCount}
