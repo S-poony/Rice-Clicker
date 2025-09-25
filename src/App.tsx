@@ -11,7 +11,7 @@ const initialPestCount = 90;
 const initialMutantPestCount = 10;
 const initialParasitoidCount = 12;
 const initialPredatorCount = 4;
-const outsidePests = 4;
+const averageOutsidePests = 4;
 const parasitoidReproductionRate = 1.25;
 const predatorReproductionRate = 1.1;
 const ReproductionBoost = 1.6;
@@ -130,6 +130,7 @@ export default function App() {
     const survivingPredators = predatorCount * predatorSurvival;
 
     // 4. Calculate new population from survivors and reproduction
+    const outsidePests = Math.random()*averageOutsidePests*2;
     const nextPestCount =
       survivingPests * pestReproductionRate + outsidePests;
     const nextMutantPestCount =
