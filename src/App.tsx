@@ -164,8 +164,8 @@ export default function App() {
            content={
             <>
               Every week, you have to click on your field to remove the layers of rice that the Brown Plant Hoppers have damaged.
-              <br />
-              After 10 weeks, you will harvest your healthy and damaged rice pads (green and yellow).
+              <br /><br />
+              After 10 weeks, you will harvest your healthy and damaged rice pads.
            </>
          }
             open = {true}
