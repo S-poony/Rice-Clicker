@@ -192,7 +192,9 @@ export default function App() {
 
         <div className="grid grid-cols-[1fr_auto] gap-6">
           <div className="space-y-4">
-            <h3>Your Field</h3>
+            <Button variant="outline" className="w-24">
+                        Your field
+                      </Button>
             {layersToRemove === 0 && !isGameOver && (
               <PesticideControl
                 onYes={() => handlePesticideChoice(true)}
