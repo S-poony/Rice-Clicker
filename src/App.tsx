@@ -5,7 +5,7 @@ import { PesticideControl } from "./components/PesticideControl";
 import { Scoreboard } from "./components/Scoreboard";
 import { GameOverDialog } from "./components/GameOverDialog";
 import { Popup } from "./components/Popup";
-
+import {Button} from "./components/ui/button";
 
 // Simulation Constants
 const cropsPerLayer = 30;
@@ -29,6 +29,7 @@ const predatorConsumptionRate = 2.5;
 export default function App() {
   const [layersToRemove, setLayersToRemove] = useState(0);
   const [layersRemoved, setLayersRemoved] = useState(0);
+  const [insectDiversityOpen, setInsectDiversityOpen] = useState<boolean>(false);
   const [pesticideSprayCount, setPesticideSprayCount] = useState(0);
   const [weekNumber, setWeekNumber] = useState(1);
   const [isGameOver, setIsGameOver] = useState(false);
@@ -180,7 +181,6 @@ export default function App() {
              open =  {pestCount - mutantPestCount < 0 }
         />
 
-
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center space-y-2">
           <h1>Rice Clicker</h1>
@@ -218,6 +218,18 @@ export default function App() {
                 BPH eaten by wasps and spiders: {totalPestsEaten} 
                 </p>
             )}
+            <Button onClick={() => setInsectDiversityOpen(true)}>Assess insect diversity this week</Button>
+            <Popup
+              title="Insect Diversity"
+              content={<>
+              You place traps in your field and extrapolate the number of insects caught to assess their diversity. <br /><br />
+              number of BPH: {Math.ceil(pestCount+mutantPestCount)} <br />
+              number of wasps: {Math.ceil(parasitoidCount)} <br />
+              number of spiders: {Math.ceil(predatorCount)} <br />  
+              </>}
+              open={insectDiversityOpen}
+              onOpenChange={setInsectDiversityOpen}
+            />
             <Scoreboard
               score={score}
               pesticideSprayCount={pesticideSprayCount}
@@ -226,7 +238,6 @@ export default function App() {
        
           </div>
         </div>
-        {/* The DownloadButton is no longer needed as we are not using the excel file */}
       </div>
       <GameOverDialog
         isOpen={isGameOver}
@@ -238,4 +249,5 @@ export default function App() {
       />
     </div>
   );
+  
 }
