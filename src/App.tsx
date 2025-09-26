@@ -169,12 +169,24 @@ export default function App() {
          }
             open = {true}
         />
+      <Popup
+           title="Warning"
+           content={
+            <>
+              More than half of the BPH population are pesticide-resistant mutants. 
+              <br />Using pesticides will not reduce their numbers, but it will harm the beneficial insects that control the regular BPH population. 
+           </>
+         }
+             open =  {pestCount - mutantPestCount < 0 }
+        />
+
+
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center space-y-2">
           <h1>Rice Clicker</h1>
           <p className="text-muted-foreground">
             This field is full of Brown Plant Hoppers, a common pest in rice.
-            But there are also wasps and spiders that prey on them. Use pesticides wisely. 
+            But there are also wasps and spiders that prey on them. 
           </p>
         </div>
 
