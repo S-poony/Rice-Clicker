@@ -7,6 +7,11 @@ import { GameOverDialog } from "./components/GameOverDialog";
 import { Popup } from "./components/Popup";
 import {Button} from "./components/ui/button";
 
+type Tip = {
+  title: string;
+  content: string;
+};
+
 // Simulation Constants
 const cropsPerLayer = 30;
 const initialPestCount = Math.random()*200;
@@ -27,9 +32,14 @@ const parasitoidConsumptionRate = 1.1;
 const predatorConsumptionRate = 2.5;
 
 export default function App() {
+  const [insectDiversityOpen, setInsectDiversityOpen] = useState<boolean>(false);
+
+  const [tipsOpen, setTipsOpen] = useState<boolean>(false);
+  const [tips, setTips] = useState<Tip[]>([]);
+  const [currentTip, setCurrentTip] = useState<Tip | null>(null);
+  
   const [layersToRemove, setLayersToRemove] = useState(0);
   const [layersRemoved, setLayersRemoved] = useState(0);
-  const [insectDiversityOpen, setInsectDiversityOpen] = useState<boolean>(false);
   const [pesticideSprayCount, setPesticideSprayCount] = useState(0);
   const [weekNumber, setWeekNumber] = useState(1);
   const [isGameOver, setIsGameOver] = useState(false);
@@ -39,6 +49,30 @@ export default function App() {
   const [buttonStates, setButtonStates] = useState<ButtonState[]>(
     new Array(gridWidth * gridHeight).fill(0)
   );
+
+  // load tips once from public/TipnpsList.json
+  useEffect(() => {
+    fetch("TipsList.json", { cache: "no-cache" })
+      .then((res) => res.json())
+      .then((data: Tip[]) => {
+        if (Array.isArray(data)) {
+          setTips(data);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load tips:", err);
+      });
+  }, []);
+
+  const showRandomTip = () => {
+    if (tips.length === 0) {
+      setCurrentTip({ title: "No tips", content: "No tips available." });
+    } else {
+      const randomIndex = Math.floor(Math.random() * tips.length);
+      setCurrentTip(tips[randomIndex]);
+    }
+    setTipsOpen(true);
+  };
 
   // Simulation state
   const [pestCount, setPestCount] = useState(initialPestCount);
@@ -236,6 +270,14 @@ export default function App() {
               score={score}
               pesticideSprayCount={pesticideSprayCount}
             />
+
+              <Button onClick={showRandomTip}>Tips</Button>
+              <Popup
+                title={currentTip?.title ?? "Tip"}
+                content={<>{currentTip?.content ?? "Loading tips..."}</>}
+                open={tipsOpen}
+                onOpenChange={setTipsOpen}
+              />
             < h3 > Want to learn more? Visit the <a href="https://github.com/S-poony/Rice-Clicker">project repository</a> </h3>
        
           </div>
