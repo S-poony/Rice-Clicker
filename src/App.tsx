@@ -4,7 +4,7 @@ import { LayerControls } from "./components/LayerControls";
 import { PesticideControl } from "./components/PesticideControl";
 import { Scoreboard } from "./components/Scoreboard";
 import { GameOverDialog } from "./components/GameOverDialog";
-import { Popup } from "./components/Tutorial";
+import { Popup } from "./components/Popup";
 
 
 // Simulation Constants
@@ -158,7 +158,16 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-background p-4">
-        <Popup />
+        <Popup
+           title="Tutorial"
+           content={
+            <>
+              Every week, you have to click on your field to remove the layers of rice that the Brown Plant Hoppers have damaged.
+              <br />
+              After 10 weeks, you will harvest your healthy and damaged rice pads (green and yellow).
+           </>
+         }
+        />
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center space-y-2">
           <h1>Rice Clicker</h1>
