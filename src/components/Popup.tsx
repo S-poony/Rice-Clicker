@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,44 +9,54 @@ import {
 } from "./ui/dialog";
 import { Button } from "./ui/button";
 
-type PopupProps = {
-  title: React.ReactNode;                // texte ou JSX pour le titre
-  content?: React.ReactNode;             // texte ou JSX pour le contenu (optionnel si children utilisé)
-  children?: React.ReactNode;            // alternative : si fourni, children seront utilisés à la place de `content`
-  defaultOpen?: boolean;                 // ouvert par défaut (true)
-  onOpenChange?: (open: boolean) => void; // callback optionnel quand l'état d'ouverture change
+export type PopupProps = {
+  title: React.ReactNode;
+  content?: React.ReactNode;
+  children?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 export function Popup({
   title,
   content,
   children,
-  defaultOpen = true,
+  open,
   onOpenChange,
 }: PopupProps) {
-  const [isOpen, setIsOpen] = useState<boolean>(defaultOpen);
+  const isControlled = typeof onOpenChange === "function";
 
+  // internal state used only when not controlled
+  const [internalOpen, setInternalOpen] = useState<boolean>(!!open);
+
+  // keep internal state in sync when parent passes a new `open` prop
   useEffect(() => {
-    if (onOpenChange) onOpenChange(isOpen);
-  }, [isOpen, onOpenChange]);
+    if (!isControlled && typeof open === "boolean") {
+      setInternalOpen(open);
+    }
+  }, [open, isControlled]);
 
-  const handleClose = () => {
-    setIsOpen(false);
-    // onOpenChange est appelé via useEffect
-  };
+  const actualOpen = isControlled ? !!open : internalOpen;
+
+  function handleOpenChange(next: boolean) {
+    if (isControlled) {
+      // parent manages state
+      onOpenChange!(next);
+    } else {
+      // we manage state locally
+      setInternalOpen(next);
+    }
+  }
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open: boolean) => setIsOpen(open)}>
+    <Dialog open={actualOpen} onOpenChange={(o: boolean) => handleOpenChange(o)}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>
-            {/* si children fournis, les afficher ; sinon afficher content */}
-            {children ?? content}
-          </DialogDescription>
+          <DialogDescription>{children ?? content}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button onClick={handleClose}>Close</Button>
+          <Button onClick={() => handleOpenChange(false)}>Close</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

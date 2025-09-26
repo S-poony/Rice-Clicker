@@ -167,6 +167,7 @@ export default function App() {
               After 10 weeks, you will harvest your healthy and damaged rice pads (green and yellow).
            </>
          }
+            open = {true}
         />
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center space-y-2">
