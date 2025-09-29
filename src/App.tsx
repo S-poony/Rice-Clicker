@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { ClickableGrid, ButtonState } from "./components/ClickableGrid";
 import { LayerControls } from "./components/LayerControls";
-import { PesticideControl } from "./components/PesticideControl";
+import { PestControl } from "./components/PestControl";
 import { Scoreboard } from "./components/Scoreboard";
 import { GameOverDialog } from "./components/GameOverDialog";
 import { Popup } from "./components/Popup";
-import {Button} from "./components/ui/button";
+import { Button } from "./components/ui/button";
 
 type Tip = {
   title: string;
@@ -14,11 +14,11 @@ type Tip = {
 
 // Simulation Constants
 const cropsPerLayer = 30;
-const initialPestCount = Math.random()*200;
-const initialMutantPestCount = Math.random()*20;
-const initialParasitoidCount = Math.random()*24;
-const initialPredatorCount = Math.random()*8;
-const averageOutsidePests = 6;
+const initialPestCount = Math.random() * 200;
+const initialMutantPestCount = Math.random() * 20;
+const initialParasitoidCount = Math.random() * 24;
+const initialPredatorCount = Math.random() * 8;
+const perillaPower = 5;
 const parasitoidReproductionRate = 1.25;
 const predatorReproductionRate = 1.1;
 const ReproductionBoost = 1.6;
@@ -37,13 +37,17 @@ export default function App() {
   const [tipsOpen, setTipsOpen] = useState<boolean>(false);
   const [tips, setTips] = useState<Tip[]>([]);
   const [currentTip, setCurrentTip] = useState<Tip | null>(null);
-  
+
   const [layersToRemove, setLayersToRemove] = useState(0);
   const [layersRemoved, setLayersRemoved] = useState(0);
   const [pesticideSprayCount, setPesticideSprayCount] = useState(0);
   const [weekNumber, setWeekNumber] = useState(1);
   const [isGameOver, setIsGameOver] = useState(false);
   const [totalPestsEaten, setTotalPestsEaten] = useState(0);
+
+  const [perilla, setPerilla] = useState(false);
+  const [averageOutsidePests, setAverageOutsidePests] = useState(6);
+
   const gridWidth = 5;
   const gridHeight = 5;
   const [buttonStates, setButtonStates] = useState<ButtonState[]>(
@@ -94,7 +98,7 @@ export default function App() {
 
   const greenCells = buttonStates.filter((state) => state === 0).length;
   const yellowCells = buttonStates.filter((state) => state === 1).length;
-  const score = weekNumber * (greenCells + yellowCells/2);
+  const score = weekNumber * (greenCells + yellowCells / 2);
 
   useEffect(() => {
     // Initial layers to remove calculation
@@ -119,7 +123,8 @@ export default function App() {
     setLayersRemoved((prev) => prev + 1);
   };
 
-  const handlePesticideChoice = (pesticideApplied: boolean) => {
+  // IMPORTANT: this handler now accepts one parameter per method to pest control. Keep in mind states are synchronous.
+  const handlePestChoice = (pesticideApplied: boolean, perillaApplied = false) => {
     if (weekNumber >= 10) {
       setIsGameOver(true);
       return;
@@ -129,11 +134,15 @@ export default function App() {
       setPesticideSprayCount((prev) => prev + 1);
     }
 
-        // --- Start of Simulation Logic ---
+    // Use a local "sprayedCount" that includes this turn's action so the
+    // reproduction logic can react immediately if desired.
+    const sprayedCount = pesticideApplied ? pesticideSprayCount + 1 : pesticideSprayCount;
+
+    // --- Start of Simulation Logic ---
     // 1. Determine reproduction rates based on pesticide history
     let pestReproductionRate = (2 * 7) / 10.42;
     let mutantPestReproductionRate = (2 * 7) / 10.42;
-    if (pesticideSprayCount > 0) {
+    if (sprayedCount > 0) {
       pestReproductionRate = ReproductionBoost;
       mutantPestReproductionRate = MutantPestReproductionBoost;
     }
@@ -143,11 +152,11 @@ export default function App() {
     const paraEat = parasitoidCount * parasitoidConsumptionRate;
     const predEat = predatorCount * predatorConsumptionRate;
     const totalPestsEaten = Math.min(pestTotal, paraEat + predEat);
-    
+
     // Pests and mutants are eaten proportionally to their numbers
     const proportionOfPests = pestTotal > 0 ? pestCount / pestTotal : 0;
     const proportionOfMutants = pestTotal > 0 ? mutantPestCount / pestTotal : 0;
-    
+
     const pestsEaten = totalPestsEaten * proportionOfPests;
     const mutantsEaten = totalPestsEaten * proportionOfMutants;
 
@@ -167,13 +176,16 @@ export default function App() {
     const survivingPredators = predatorCount * predatorSurvival;
 
     // 4. Calculate new population from survivors and reproduction
-    const outsidePests = Math.random()*averageOutsidePests*2;
-    const nextPestCount =
-      survivingPests * pestReproductionRate + outsidePests;
-    const nextMutantPestCount =
-      survivingMutants * mutantPestReproductionRate + outsidePests;
-    const nextParasitoidCount =
-      survivingParasitoids * parasitoidReproductionRate;
+    // Use an "effective" average outside pests for this turn if Perilla is applied now
+    const effectiveAverageOutsidePests = perillaApplied
+      ? Math.max(0, averageOutsidePests - perillaPower)
+      : averageOutsidePests;
+
+    const outsidePests = Math.random() * effectiveAverageOutsidePests * 2;
+
+    const nextPestCount = survivingPests * pestReproductionRate + outsidePests;
+    const nextMutantPestCount = survivingMutants * mutantPestReproductionRate + outsidePests;
+    const nextParasitoidCount = survivingParasitoids * parasitoidReproductionRate;
     const nextPredatorCount = survivingPredators * predatorReproductionRate;
 
     setPestCount(nextPestCount);
@@ -183,37 +195,44 @@ export default function App() {
 
     const nextPestTotal = nextPestCount + nextMutantPestCount;
     const cropsEaten = nextPestTotal * pestConsumptionRate;
-    const newLayersToRemove = Math.ceil(((cropsEaten / cropsPerLayer))/(((gridWidth*gridHeight)*3) / (greenCells * 3 +yellowCells)));
+    const newLayersToRemove = Math.ceil(((cropsEaten / cropsPerLayer)) / (((gridWidth * gridHeight) * 3) / (greenCells * 3 + yellowCells)));
 
     setLayersToRemove(newLayersToRemove);
     setWeekNumber((prev) => prev + 1);
     setTotalPestsEaten(Math.ceil(totalPestsEaten));
+
+    // persist the Perilla state / average change so future turns see it
+    if (perillaApplied) {
+      setAverageOutsidePests(effectiveAverageOutsidePests);
+      setPerilla(true);
+    }
     // --- End of Simulation Logic ---
   };
 
   return (
     <div className="min-h-screen bg-background p-4">
-        <Popup
-           title="Tutorial"
-           content={
-            <>
-              Every week, you have to click on your field to remove the layers of rice that the Brown Plant Hoppers have damaged.
-              <br /><br />
-              After 10 weeks, you will harvest your healthy and damaged rice pads.
-           </>
-         }
-            open = {true}
-        />
       <Popup
-           title="Warning"
-           content={
-            <>
-              More than half of the BPH population are pesticide-resistant mutants. 
-              <br />Using pesticides will not reduce their numbers, but it will harm the beneficial insects that control the regular BPH population. 
-           </>
-         }
-             open =  {pestCount - mutantPestCount < 0 }
-        />
+        title="Tutorial"
+        content={
+          <>
+            Every week, you have to click on your field to remove the layers of rice that the Brown Plant Hoppers have damaged.
+            <br />
+            <br />
+            After 10 weeks, you will harvest your healthy and damaged rice pads.
+          </>
+        }
+        open={true}
+      />
+      <Popup
+        title="Warning"
+        content={
+          <>
+            More than half of the BPH population are pesticide-resistant mutants. 
+            <br />Using pesticides will not reduce their numbers, but it will harm the beneficial insects that control the regular BPH population. 
+          </>
+        }
+        open={pestCount - mutantPestCount < 0}
+      />
 
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center space-y-2">
@@ -227,12 +246,14 @@ export default function App() {
         <div className="grid grid-cols-[1fr_auto] gap-6">
           <div className="space-y-4">
             <Button variant="outline" className="w-24">
-                        Your field
-                      </Button>
+              Your field
+            </Button>
             {layersToRemove === 0 && !isGameOver && (
-              <PesticideControl
-                onYes={() => handlePesticideChoice(true)}
-                onNo={() => handlePesticideChoice(false)}
+              <PestControl
+                onSpray={() => handlePestChoice(true)}
+                onPass={() => handlePestChoice(false)}
+                // pass "perillaApplied=true" so the handler computes the perilla effect immediately
+                onPerilla={() => handlePestChoice(false, true)}
               />
             )}
             <ClickableGrid
@@ -250,18 +271,21 @@ export default function App() {
               weekNumber={weekNumber}
             />
             {weekNumber > 1 && (
-                <p className="text-muted-foreground">
-                BPH eaten by wasps and spiders: {totalPestsEaten} 
-                </p>
+              <p className="text-muted-foreground">
+                BPH eaten by wasps and spiders: {totalPestsEaten} <br />
+                <br />
+                DEBUG : {averageOutsidePests}
+              </p>
+
             )}
             <Button onClick={() => setInsectDiversityOpen(true)}>Assess insect diversity this week</Button>
             <Popup
               title="Insect Diversity"
-              content={<>
-              You place traps in your field and extrapolate the number of insects caught to assess their diversity. <br /><br />
-              number of BPH: {Math.ceil(pestCount+mutantPestCount)} <br />
-              number of wasps: {Math.ceil(parasitoidCount)} <br />
-              number of spiders: {Math.ceil(predatorCount)} <br />  
+              content={<> 
+                You place traps in your field and extrapolate the number of insects caught to assess their diversity. <br /><br />
+                number of BPH: {Math.ceil(pestCount+mutantPestCount)} <br />
+                number of wasps: {Math.ceil(parasitoidCount)} <br />
+                number of spiders: {Math.ceil(predatorCount)} <br />  
               </>}
               open={insectDiversityOpen}
               onOpenChange={setInsectDiversityOpen}
@@ -271,15 +295,15 @@ export default function App() {
               pesticideSprayCount={pesticideSprayCount}
             />
 
-              <Button onClick={showRandomTip}>Tips</Button>
-              <Popup
-                title={currentTip?.title ?? "Tip"}
-                content={<>{currentTip?.content ?? "Loading tips..."}</>}
-                open={tipsOpen}
-                onOpenChange={setTipsOpen}
-              />
+            <Button onClick={showRandomTip}>Tips</Button>
+            <Popup
+              title={currentTip?.title ?? "Tip"}
+              content={<>{currentTip?.content ?? "Loading tips..."}</>}
+              open={tipsOpen}
+              onOpenChange={setTipsOpen}
+            />
             < h3 > Want to learn more? Visit the <a href="https://github.com/S-poony/Rice-Clicker">project repository</a> </h3>
-       
+
           </div>
         </div>
       </div>
@@ -293,5 +317,5 @@ export default function App() {
       />
     </div>
   );
-  
+
 }
