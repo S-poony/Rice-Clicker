@@ -18,7 +18,7 @@ const initialPestCount = Math.random() * 200;
 const initialMutantPestCount = Math.random() * 20;
 const initialParasitoidCount = Math.random() * 24;
 const initialPredatorCount = Math.random() * 8;
-const perillaPower = 5;
+const perillaPower = 4;
 const parasitoidReproductionRate = 1.25;
 const predatorReproductionRate = 1.1;
 const ReproductionBoost = 1.6;
@@ -274,7 +274,7 @@ export default function App() {
               <p className="text-muted-foreground">
                 BPH eaten by wasps and spiders: {totalPestsEaten} <br />
                 <br />
-                DEBUG : {averageOutsidePests}
+                Average number of pests coming from neighbouring fields: {averageOutsidePests}
               </p>
 
             )}
