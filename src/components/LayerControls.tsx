@@ -13,7 +13,7 @@ export function LayerControls({
   return (
     <div className="flex flex-col gap-4 p-6 bg-card rounded-lg border">
       <div className="flex flex-col gap-2">
-        {weekNumber > 0 && (
+        {weekNumber >= 0 && (
         <div className="relative">
           <Button variant="outline" className="w-24">
             Week {weekNumber}
