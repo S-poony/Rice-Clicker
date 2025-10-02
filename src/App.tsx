@@ -6,6 +6,7 @@ import { Scoreboard } from "./components/Scoreboard";
 import { GameOverDialog } from "./components/GameOverDialog";
 import { Popup } from "./components/Popup";
 import { Button } from "./components/ui/button";
+import { FlowerField } from "./components/FlowerField";
 
 type Tip = {
   title: string;
@@ -18,7 +19,6 @@ const initialPestCount = Math.random() * 400;
 const initialMutantPestCount = Math.random() * 40;
 const initialParasitoidCount = Math.random() * 48;
 const initialPredatorCount = Math.random() * 16;
-const perillaPower = 4;
 const flowerBoost = 2;
 const perillaParasitoidBoost = 2;
 const parasitoidReproductionRate = 1.25;
@@ -227,10 +227,6 @@ export default function App() {
     const survivingPredators = predatorCount * predatorSurvival;
 
     // 4. Calculate new population from survivors and reproduction
-    // Use an "effective" average outside pests for this turn if Perilla is applied now
-    const effectiveAverageOutsidePests = perillaApplied
-      ? Math.max(0, averageOutsidePests - perillaPower)
-      : averageOutsidePests;
 
     const outsidePests = Math.random() * averageOutsidePests * 2;
     const outsideParasitoids = Math.random() * averageOutsideParasitoids * 2;
@@ -253,120 +249,119 @@ export default function App() {
     setWeekNumber((prev) => prev + 1);
     setTotalPestsEaten(Math.ceil(totalPestsEaten));
 
-    // persist the Perilla state / average change so future turns see it
-    if (perillaApplied) {
-      setAverageOutsidePests(effectiveAverageOutsidePests);
-      setPerilla(true);
-    }
     // --- End of Simulation Logic ---
   };
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <Popup
-        title="Tutorial"
-        content={
-          <>
-            Every week, you have to click on your field to remove the layers of rice that the Brown Plant Hoppers have damaged.
-            <br />
-            <br />
-            After 10 weeks, you will harvest your healthy and damaged rice pads.
-          </>
-        }
-        open={true}
-      />
-      <Popup
-        title="Warning"
-        content={
-          <>
-            More than half of the BPH population are pesticide-resistant mutants. 
-            <br />Using pesticides will not reduce their numbers, but it will harm the beneficial insects that control the regular BPH population. 
-          </>
-        }
-        open={pestCount - mutantPestCount < 0}
-      />
+    <div className="min-h-screen p-4 relative">
+      <div className="absolute inset-0 bg-background -z-20" />
+      {perilla && <FlowerField />} 
+      <div className="relative z-10">
+        <Popup
+          title="Tutorial"
+          content={
+            <>
+              Every week, you have to click on your field to remove the layers of rice that the Brown Plant Hoppers have damaged.
+              <br />
+              <br />
+              After 10 weeks, you will harvest your healthy and damaged rice pads.
+            </>
+          }
+          open={true}
+        />
+        <Popup
+          title="Warning"
+          content={
+            <>
+              More than half of the BPH population are pesticide-resistant mutants. 
+              <br />Using pesticides will not reduce their numbers, but it will harm the beneficial insects that control the regular BPH population. 
+            </>
+          }
+          open={pestCount - mutantPestCount < 0}
+        />
 
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="text-center space-y-2">
-          <h1>Rice Clicker</h1>
-          <p className="text-muted-foreground">
-            This field is full of Brown Plant Hoppers, a common pest in rice.
-            But there are also wasps and spiders that prey on them. 
-          </p>
-        </div>
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="text-center space-y-2">
+            <h1>Rice Clicker</h1>
+            <p className="text-muted-foreground">
+              This field is full of Brown Plant Hoppers, a common pest in rice.
+              But there are also wasps and spiders that prey on them. 
+            </p>
+          </div>
 
-        <div className="grid grid-cols-[1fr_auto] gap-6">
-          <div className="space-y-4">
-            <Button variant="outline" className="w-24">
-              Your field
-            </Button>
-            {layersToRemove === 0 && !isGameOver && (
-              <PestControl
-                onSpray={() => handlePestChoice(true)}
-                onPass={() => handlePestChoice(false)}
-                onPerilla={() => handlePestChoice(false, true)}
-                weekNumber = {weekNumber}
+          <div className="grid grid-cols-[1fr_auto] gap-6">
+            <div className="space-y-4">
+              <Button variant="outline" className="w-24">
+                Your field
+              </Button>
+              {layersToRemove === 0 && !isGameOver && (
+                <PestControl
+                  onSpray={() => handlePestChoice(true)}
+                  onPass={() => handlePestChoice(false)}
+                  onPerilla={() => handlePestChoice(false, true)}
+                  weekNumber = {weekNumber}
+                />
+              )}
+              <ClickableGrid
+                width={gridWidth}
+                height={gridHeight}
+                layersToRemove={layersToRemove}
+                onDecrementLayers={handleDecrementLayers}
+                buttonStates={buttonStates}
+                setButtonStates={setButtonStates}
               />
-            )}
-            <ClickableGrid
-              width={gridWidth}
-              height={gridHeight}
-              layersToRemove={layersToRemove}
-              onDecrementLayers={handleDecrementLayers}
-              buttonStates={buttonStates}
-              setButtonStates={setButtonStates}
-            />
-          </div>
-          <div className="space-y-6">
-            <LayerControls
-              layersToRemove={layersToRemove}
-              weekNumber={weekNumber}
-            />
-            {weekNumber > 1 && (
-              <p className="text-muted-foreground">
-                BPH eaten by wasps and spiders: {totalPestsEaten} <br />
-                <br />
-                Average number of pests coming from neighbouring fields: {averageOutsidePests}
-              </p>
+            </div>
+            <div className="space-y-6">
+              <LayerControls
+                layersToRemove={layersToRemove}
+                weekNumber={weekNumber}
+              />
+              {weekNumber > 1 && (
+                <p className="text-muted-foreground">
+                  BPH eaten by wasps and spiders: {totalPestsEaten} <br />
+                  <br />
+                  Average number of pests coming from neighbouring fields: {averageOutsidePests}
+                </p>
 
-            )}
-            <Button onClick={() => setInsectDiversityOpen(true)}>Assess insect diversity this week</Button>
-            <Popup
-              title="Insect Diversity"
-              content={<> 
-                You place traps in your field and extrapolate the number of insects caught to assess their diversity. <br /><br />
-                number of BPH: {Math.floor(pestCount+mutantPestCount)} <br />
-                number of wasps: {Math.floor(parasitoidCount)} <br />
-                number of spiders: {Math.floor(predatorCount)} <br />  
-              </>}
-              open={insectDiversityOpen}
-              onOpenChange={setInsectDiversityOpen}
-            />
-            <Scoreboard
-              score={score}
-              pesticideSprayCount={pesticideSprayCount}
-            />
+              )}
+              <Button onClick={() => setInsectDiversityOpen(true)}>Assess insect diversity this week</Button>
+              <Popup
+                title="Insect Diversity"
+                content={<> 
+                  You place traps in your field and extrapolate the number of insects caught to assess their diversity. <br /><br />
+                  number of BPH: {Math.floor(pestCount+mutantPestCount)} <br />
+                  number of wasps: {Math.floor(parasitoidCount)} <br />
+                  number of spiders: {Math.floor(predatorCount)} <br />  
+                </>}
+                open={insectDiversityOpen}
+                onOpenChange={setInsectDiversityOpen}
+              />
+              <Scoreboard
+                score={score}
+                pesticideSprayCount={pesticideSprayCount}
+              />
 
-            <Button onClick={showRandomTip}>Tips</Button>
-            <Popup
-              title={currentTip?.title ?? "Tip"}
-              content={<>{currentTip?.content ?? "Loading tips..."}</>}
-              open={tipsOpen}
-              onOpenChange={setTipsOpen}
-            />
-            < h3 > Want to learn more? Visit the <a href="https://github.com/S-poony/Rice-Clicker">project repository</a> </h3>
+              <Button onClick={showRandomTip}>Tips</Button>
+              <Popup
+                title={currentTip?.title ?? "Tip"}
+                content={<>{currentTip?.content ?? "Loading tips..."}</>}
+                open={tipsOpen}
+                onOpenChange={setTipsOpen}
+              />
+              < h3 > Want to learn more? Visit the <a href="https://github.com/S-poony/Rice-Clicker">project repository</a> </h3>
 
+            </div>
           </div>
         </div>
+        <GameOverDialog
+          isOpen={isGameOver}
+          score={score}
+          pesticideSprayCount={pesticideSprayCount}
+          weekNumber={weekNumber}
+          onShare={() => alert("Score copied to clipboard!")}
+          onClose={() => setIsGameOver(false)}
+        />
       </div>
-      <GameOverDialog
-        isOpen={isGameOver}
-        score={score}
-        pesticideSprayCount={pesticideSprayCount}
-        weekNumber={weekNumber}
-        onShare={() => alert("Score copied to clipboard!")}
-        onClose={() => setIsGameOver(false)}
-      />
     </div>
   );
 
