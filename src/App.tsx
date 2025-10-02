@@ -6,6 +6,7 @@ import { Scoreboard } from "./components/Scoreboard";
 import { GameOverDialog } from "./components/GameOverDialog";
 import { Popup } from "./components/Popup";
 import { Button } from "./components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import { FlowerField } from "./components/FlowerField";
 
 type Tip = {
@@ -280,76 +281,89 @@ export default function App() {
           open={pestCount - mutantPestCount < 0}
         />
 
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-6xl mx-auto space-y-6">
           <div className="text-center space-y-2">
-            <h1>Rice Clicker</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Rice Clicker</h1>
+            <p className="text-muted-foreground md:text-xl">
               This field is full of Brown Plant Hoppers, a common pest in rice.
-              But there are also wasps and spiders that prey on them. 
+              But there are also wasps and spiders that prey on them.
             </p>
           </div>
 
-          <div className="grid grid-cols-[1fr_auto] gap-6">
-            <div className="space-y-4">
-              <Button variant="outline" className="w-24">
-                Your field
-              </Button>
-              {layersToRemove === 0 && !isGameOver && (
-                <PestControl
-                  onSpray={() => handlePestChoice(true)}
-                  onPass={() => handlePestChoice(false)}
-                  onPerilla={() => handlePestChoice(false, true)}
-                  weekNumber = {weekNumber}
-                />
-              )}
-              <ClickableGrid
-                width={gridWidth}
-                height={gridHeight}
-                layersToRemove={layersToRemove}
-                onDecrementLayers={handleDecrementLayers}
-                buttonStates={buttonStates}
-                setButtonStates={setButtonStates}
-              />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-2 space-y-4">
+              <Card className="bg-white/80 backdrop-blur-sm">
+                <CardContent className="flex flex-col items-center space-y-4 pt-6">
+                  {layersToRemove === 0 && !isGameOver && (
+                    <PestControl
+                      onSpray={() => handlePestChoice(true)}
+                      onPass={() => handlePestChoice(false)}
+                      onPerilla={() => handlePestChoice(false, true)}
+                      weekNumber={weekNumber}
+                    />
+                  )}
+                  <ClickableGrid
+                    width={gridWidth}
+                    height={gridHeight}
+                    layersToRemove={layersToRemove}
+                    onDecrementLayers={handleDecrementLayers}
+                    buttonStates={buttonStates}
+                    setButtonStates={setButtonStates}
+                  />
+                  <h3 className="text-xl font-semibold tracking-tight pt-2">Your Field</h3>
+                </CardContent>
+              </Card>
             </div>
             <div className="space-y-6">
-              <LayerControls
-                layersToRemove={layersToRemove}
-                weekNumber={weekNumber}
-              />
-              {weekNumber > 1 && (
-                <p className="text-muted-foreground">
-                  BPH eaten by wasps and spiders: {totalPestsEaten} <br />
-                  <br />
-                  Average number of pests coming from neighbouring fields: {averageOutsidePests}
-                </p>
-
-              )}
-              <Button onClick={() => setInsectDiversityOpen(true)}>Assess insect diversity this week</Button>
+              <Card className="bg-white/80 backdrop-blur-sm">
+                <CardHeader>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <LayerControls
+                    layersToRemove={layersToRemove}
+                    weekNumber={weekNumber}
+                  />
+                  {weekNumber > 1 && (
+                    <p className="text-sm text-muted-foreground">
+                      BPH eaten by wasps and spiders: {totalPestsEaten} <br />
+                      Average number of pests coming from neighbouring fields: {averageOutsidePests}
+                    </p>
+                  )}
+                  <Button onClick={() => setInsectDiversityOpen(true)}>Assess Insect Diversity</Button>
+                  <Scoreboard
+                    score={score}
+                    pesticideSprayCount={pesticideSprayCount}
+                  />
+                </CardContent>
+              </Card>
+              <Card className="bg-white/80 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle>Learn More</CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-col items-center space-y-2">
+                  <Button onClick={showRandomTip}>Get a Tip</Button>
+                  <p className="text-sm text-center text-muted-foreground pt-2">
+                    Want to learn more? Visit the <a href="https://github.com/S-poony/Rice-Clicker" className="underline">project repository</a>.
+                  </p>
+                </CardContent>
+              </Card>
               <Popup
                 title="Insect Diversity"
-                content={<> 
+                content={<>
                   You place traps in your field and extrapolate the number of insects caught to assess their diversity. <br /><br />
-                  number of BPH: {Math.floor(pestCount+mutantPestCount)} <br />
-                  number of wasps: {Math.floor(parasitoidCount)} <br />
-                  number of spiders: {Math.floor(predatorCount)} <br />  
+                  Number of BPH: {Math.floor(pestCount + mutantPestCount)} <br />
+                  Number of wasps: {Math.floor(parasitoidCount)} <br />
+                  Number of spiders: {Math.floor(predatorCount)} <br />
                 </>}
                 open={insectDiversityOpen}
                 onOpenChange={setInsectDiversityOpen}
               />
-              <Scoreboard
-                score={score}
-                pesticideSprayCount={pesticideSprayCount}
-              />
-
-              <Button onClick={showRandomTip}>Tips</Button>
               <Popup
                 title={currentTip?.title ?? "Tip"}
                 content={<>{currentTip?.content ?? "Loading tips..."}</>}
                 open={tipsOpen}
                 onOpenChange={setTipsOpen}
               />
-              < h3 > Want to learn more? Visit the <a href="https://github.com/S-poony/Rice-Clicker">project repository</a> </h3>
-
             </div>
           </div>
         </div>
