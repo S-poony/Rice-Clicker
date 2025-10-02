@@ -19,6 +19,9 @@ export function PestControl({ weekNumber, onSpray, onPass, onPerilla }: PestCont
             <Button onClick={onPerilla} variant="outline">
               <h3 className="text-lg font-semibold">Plant flowers</h3>
             </Button>
+            <Button onClick={onSpray} variant="outline">
+              <h3 className="text-lg font-semibold">Spray pesticide</h3>
+            </Button>
           </>
         ) : (
           <>

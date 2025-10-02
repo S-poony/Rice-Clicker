@@ -14,10 +14,10 @@ type Tip = {
 
 // Simulation Constants
 const cropsPerLayer = 30;
-const initialPestCount = Math.random() * 200;
-const initialMutantPestCount = Math.random() * 20;
-const initialParasitoidCount = Math.random() * 24;
-const initialPredatorCount = Math.random() * 8;
+const initialPestCount = Math.random() * 400;
+const initialMutantPestCount = Math.random() * 40;
+const initialParasitoidCount = Math.random() * 48;
+const initialPredatorCount = Math.random() * 16;
 const perillaPower = 4;
 const flowerBoost = 2;
 const perillaParasitoidBoost = 2;
@@ -46,13 +46,14 @@ export default function App() {
   const [weekNumber, setWeekNumber] = useState(0);
   const [isGameOver, setIsGameOver] = useState(false);
   const [totalPestsEaten, setTotalPestsEaten] = useState(0);
+  const [pesticideScheduled, setPesticideScheduled] = useState(false);
 
   const [perilla, setPerilla] = useState(false);
   const [averageOutsidePests, setAverageOutsidePests] = useState(6);
   const [averageOutsideParasitoids, setAverageOutsideParasitoids] = useState(0);
 
-  const gridWidth = 5;
-  const gridHeight = 5;
+  const gridWidth = 10;
+  const gridHeight = 10;
   const [buttonStates, setButtonStates] = useState<ButtonState[]>(
     new Array(gridWidth * gridHeight).fill(0)
   );
@@ -132,15 +133,33 @@ export default function App() {
         boostedInitialParasitoidCount *= flowerBoost;
         setAverageOutsideParasitoids(perillaParasitoidBoost);
       }
+      if (pesticideApplied) {
+        setPesticideScheduled(true);
+      }
       // We can add other agroecological methods here in the future
       
-      // Now, start the infestation for week 1
-      setPestCount(initialPestCount);
-      setMutantPestCount(initialMutantPestCount);
-      setParasitoidCount(boostedInitialParasitoidCount);
-      setPredatorCount(initialPredatorCount);
+      let pestStart = initialPestCount;
+      let mutantStart = initialMutantPestCount;
+      let parasitoidStart = boostedInitialParasitoidCount;
+      let predatorStart = initialPredatorCount;
 
-      const pestTotal = initialPestCount + initialMutantPestCount;
+      if (pesticideApplied) {
+        // Apply pesticide effects immediately to the starting populations for week 1
+        pestStart *= pestSurvivalRate;
+        parasitoidStart *= parasitoidSurvivalRate;
+        predatorStart *= predatorSurvivalRate;
+        // Mutants are not affected
+        mutantStart *= MutantPestPesticideSurvivalRate;
+        setPesticideSprayCount((prev) => prev + 1);
+      }
+
+      // Now, start the infestation for week 1
+      setPestCount(pestStart);
+      setMutantPestCount(mutantStart);
+      setParasitoidCount(parasitoidStart);
+      setPredatorCount(predatorStart);
+
+      const pestTotal = pestStart + mutantStart;
       const cropsEaten = pestTotal * pestConsumptionRate;
       const initialLayers = Math.ceil(cropsEaten / cropsPerLayer);
       setLayersToRemove(initialLayers);
@@ -149,18 +168,26 @@ export default function App() {
       return;
     }
 
+    let isPesticideAppliedThisTurn = pesticideApplied;
+    if (weekNumber === 1 && pesticideScheduled) {
+      // This logic is now handled in the week 0 setup.
+      // We keep the flag reset for future logic.
+      isPesticideAppliedThisTurn = false; 
+      setPesticideScheduled(false); // Reset after use
+    }
+
     if (weekNumber >= 10) {
       setIsGameOver(true);
       return;
     }
 
-    if (pesticideApplied) {
+    if (isPesticideAppliedThisTurn) {
       setPesticideSprayCount((prev) => prev + 1);
     }
 
     // Use a local "sprayedCount" that includes this turn's action so the
     // reproduction logic can react immediately if desired.
-    const sprayedCount = pesticideApplied ? pesticideSprayCount + 1 : pesticideSprayCount;
+    const sprayedCount = isPesticideAppliedThisTurn ? pesticideSprayCount + 1 : pesticideSprayCount;
 
     // --- Start of Simulation Logic ---
     // 1. Determine reproduction rates based on pesticide history
@@ -188,11 +215,11 @@ export default function App() {
     const mutantsAfterPredation = mutantPestCount - mutantsEaten;
 
     // 3. Calculate survivors after pesticide application (if any)
-    const pestSurvival = pesticideApplied ? pestSurvivalRate : 1;
-    const parasitoidSurvival = pesticideApplied ? parasitoidSurvivalRate : 1;
-    const predatorSurvival = pesticideApplied ? predatorSurvivalRate : 1;
+    const pestSurvival = isPesticideAppliedThisTurn ? pestSurvivalRate : 1;
+    const parasitoidSurvival = isPesticideAppliedThisTurn ? parasitoidSurvivalRate : 1;
+    const predatorSurvival = isPesticideAppliedThisTurn ? predatorSurvivalRate : 1;
     // Mutants always survive pesticides in this model
-    const mutantSurvival = pesticideApplied ? MutantPestPesticideSurvivalRate : 1;
+    const mutantSurvival = isPesticideAppliedThisTurn ? MutantPestPesticideSurvivalRate : 1;
 
     const survivingPests = pestsAfterPredation * pestSurvival;
     const survivingMutants = mutantsAfterPredation * mutantSurvival;
@@ -308,9 +335,9 @@ export default function App() {
               title="Insect Diversity"
               content={<> 
                 You place traps in your field and extrapolate the number of insects caught to assess their diversity. <br /><br />
-                number of BPH: {Math.ceil(pestCount+mutantPestCount)} <br />
-                number of wasps: {Math.ceil(parasitoidCount)} <br />
-                number of spiders: {Math.ceil(predatorCount)} <br />  
+                number of BPH: {Math.floor(pestCount+mutantPestCount)} <br />
+                number of wasps: {Math.floor(parasitoidCount)} <br />
+                number of spiders: {Math.floor(predatorCount)} <br />  
               </>}
               open={insectDiversityOpen}
               onOpenChange={setInsectDiversityOpen}
