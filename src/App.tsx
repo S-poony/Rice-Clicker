@@ -258,8 +258,9 @@ export default function App() {
       <div className="absolute inset-0 bg-background -z-20" />
       {perilla && <FlowerField />} 
       <div className="relative z-10">
-        <Popup
-          title="Tutorial"
+        {weekNumber>0 && (
+          <Popup
+          title="Your field is infested!"
           content={
             <>
               Every week, you have to click on your field to remove the layers of rice that the Brown Plant Hoppers have damaged.
@@ -270,6 +271,7 @@ export default function App() {
           }
           open={true}
         />
+        )}
         <Popup
           title="Warning"
           content={
@@ -285,10 +287,37 @@ export default function App() {
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Rice Clicker</h1>
             <p className="text-muted-foreground md:text-xl">
-              This field is full of Brown Plant Hoppers, a common pest in rice.
-              But there are also wasps and spiders that prey on them.
+              {weekNumber===0 ? 
+              "Welcome to your rice field! There is currently no pest infestation, decide what to do before starting the first week." :
+              "This field is full of Brown Plant Hoppers, a common pest in rice. But there are also wasps and spiders that prey on them."}
+              
             </p>
+            
           </div>
+
+          {weekNumber > 0 && (
+              <Card className="bg-white/80">
+                <CardHeader>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Button onClick={() => setInsectDiversityOpen(true)}>Assess Insect Diversity</Button>
+                  <Scoreboard
+                    score={score}
+                    pesticideSprayCount={pesticideSprayCount}
+                  />
+                  <LayerControls
+                    layersToRemove={layersToRemove}
+                    weekNumber={weekNumber}
+                  />
+                  {weekNumber > 1 && (
+                    <p className="text-sm text-muted-foreground">
+                      BPH eaten by wasps and spiders: {totalPestsEaten} <br />
+                      Average number of pests coming from neighbouring fields: {averageOutsidePests}
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+             )}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2 space-y-4">
@@ -315,27 +344,7 @@ export default function App() {
               </Card>
             </div>
             <div className="space-y-6">
-              <Card className="bg-white/80 backdrop-blur-sm">
-                <CardHeader>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <LayerControls
-                    layersToRemove={layersToRemove}
-                    weekNumber={weekNumber}
-                  />
-                  {weekNumber > 1 && (
-                    <p className="text-sm text-muted-foreground">
-                      BPH eaten by wasps and spiders: {totalPestsEaten} <br />
-                      Average number of pests coming from neighbouring fields: {averageOutsidePests}
-                    </p>
-                  )}
-                  <Button onClick={() => setInsectDiversityOpen(true)}>Assess Insect Diversity</Button>
-                  <Scoreboard
-                    score={score}
-                    pesticideSprayCount={pesticideSprayCount}
-                  />
-                </CardContent>
-              </Card>
+              
               <Card className="bg-white/80 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle>Learn More</CardTitle>
