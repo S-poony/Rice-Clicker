@@ -98,7 +98,8 @@ export default function App() {
 
   const greenCells = buttonStates.filter((state) => state === 0).length;
   const yellowCells = buttonStates.filter((state) => state === 1).length;
-  const score = weekNumber * (greenCells + yellowCells / 2);
+  const brownCells = buttonStates.filter((state) => state === 2).length;
+  const score = weekNumber * (greenCells + yellowCells + brownCells / 3);
 
   useEffect(() => {
     // Initial layers to remove calculation
@@ -195,7 +196,7 @@ export default function App() {
 
     const nextPestTotal = nextPestCount + nextMutantPestCount;
     const cropsEaten = nextPestTotal * pestConsumptionRate;
-    const newLayersToRemove = Math.ceil(((cropsEaten / cropsPerLayer)) / (((gridWidth * gridHeight) * 3) / (greenCells * 3 + yellowCells)));
+    const newLayersToRemove = Math.ceil(((cropsEaten / cropsPerLayer)) / (((gridWidth * gridHeight) * 3) / (greenCells * 3 + yellowCells * 2 + brownCells))) ;
 
     setLayersToRemove(newLayersToRemove);
     setWeekNumber((prev) => prev + 1);

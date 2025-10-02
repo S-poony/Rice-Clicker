@@ -106,6 +106,13 @@
     --default-mono-font-feature-settings: var(--font-mono--font-feature-settings);
     --default-mono-font-variation-settings: var(--font-mono--font-variation-settings);
     --color-border: var(--border);
+      /* --- ADDED AMBER COLOR PALETTE MAPPING --- */
+    --color-amber-500: var(--amber-500);
+    --color-amber-600: var(--amber-600);
+    --color-amber-700: var(--amber-700);
+    --color-amber-800: var(--amber-800);
+    --color-amber-900: var(--amber-900);
+    /* ----------------------------------------- */
   }
 }
 
@@ -1406,6 +1413,10 @@
     }
   }
 
+ .border-amber-800 {
+    border-color: var(--color-amber-800);
+  }
+
   .border-green-500 {
     border-color: var(--color-green-500);
   }
@@ -1482,6 +1493,10 @@
 
   .bg-gray-100 {
     background-color: var(--color-gray-100);
+  }
+
+  .bg-amber-800 {
+      background-color: var(--color-amber-800); 
   }
 
   .bg-green-500 {
@@ -2409,6 +2424,12 @@
     }
   }
 
+ @media (hover: hover) {
+    .hover\:bg-amber-900:hover {
+      background-color: var(--color-amber-900);
+    }
+  }
+  
   @media (hover: hover) {
     .hover\:bg-muted:hover {
       background-color: var(--muted);
@@ -4130,6 +4151,13 @@
   --sidebar-accent-foreground: oklch(.205 0 0);
   --sidebar-border: oklch(.922 0 0);
   --sidebar-ring: oklch(.708 0 0);
+  /* --- ADDED AMBER COLOR PALETTE --- */
+  --amber-500: #f59e0b;
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+  --amber-800: #92400e; /* The brown shade used in your component */
+  --amber-900: #78350f;
+  /* ---------------------------------- */
 }
 
 .dark {
@@ -4167,6 +4195,13 @@
   --sidebar-accent-foreground: oklch(.985 0 0);
   --sidebar-border: oklch(.269 0 0);
   --sidebar-ring: oklch(.439 0 0);
+  /* --- ADDED AMBER COLOR PALETTE FOR DARK MODE --- */
+  --amber-500: #fbbf24;
+  --amber-600: #f59e0b;
+  --amber-700: #d97706;
+  --amber-800: #b45309; /* The brown shade for dark mode */
+  --amber-900: #92400e;
+  /* ------------------------------------------------ */
 }
 
 html {
