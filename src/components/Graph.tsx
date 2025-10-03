@@ -108,18 +108,23 @@ export  const PopulationGraph = ({ data }: { data: WeekData[] }) => {
               <defs>
                 {/* Gradient for Normal Pest */}
                 <linearGradient id="colorNormal" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#4c51bf" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#4c51bf" stopOpacity={0.1}/>
+                  <stop offset="5%" stopColor="#bf4c99ff" stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor="#c11e39ff" stopOpacity={0.1}/>
                 </linearGradient>
                 {/* Gradient for Mutant Pest */}
                 <linearGradient id="colorMutant" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#ef4444" stopOpacity={0.1}/>
+                  <stop offset="5%" stopColor="#840568ff" stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor="#a909e4ff" stopOpacity={0.1}/>
                 </linearGradient>
                 {/* Gradient for Parasitoid */}
                 <linearGradient id="colorParasitoid" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
                   <stop offset="95%" stopColor="#10b981" stopOpacity={0.1}/>
+                </linearGradient>
+                {/* Gradient for Predator */}
+                <linearGradient id="colorPredator" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#1e10b9ff" stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor="#3710b9ff" stopOpacity={0.1}/>
                 </linearGradient>
               </defs>
 
@@ -137,10 +142,9 @@ export  const PopulationGraph = ({ data }: { data: WeekData[] }) => {
               <Legend wrapperStyle={{ paddingTop: '10px' }} />
               
               <Area 
-                  type="monotone" 
+                  type="monotone" //todo: normalize colors, stack mutant and normal pests, parasitoids and predators w/stackID= "1"
                   dataKey="normalPestCount" 
-                  stackId="1" 
-                  stroke="#4c51bf" 
+                  stroke="#ff2c2cff" 
                   fill="url(#colorNormal)" 
                   name="Normal Pests" 
                   strokeWidth={2}
@@ -148,8 +152,7 @@ export  const PopulationGraph = ({ data }: { data: WeekData[] }) => {
               <Area 
                   type="monotone" 
                   dataKey="mutantPestCount" 
-                  stackId="1" 
-                  stroke="#ef4444" 
+                  stroke="#8d0075ff" 
                   fill="url(#colorMutant)" 
                   name="Mutant Pests" 
                   strokeWidth={2}
@@ -157,7 +160,6 @@ export  const PopulationGraph = ({ data }: { data: WeekData[] }) => {
               <Area 
                   type="monotone" 
                   dataKey="parasitoidCount" 
-                  stackId="1" 
                   stroke="#10b981" 
                   fill="url(#colorParasitoid)" 
                   name="Parasitoids" 
@@ -166,9 +168,8 @@ export  const PopulationGraph = ({ data }: { data: WeekData[] }) => {
               <Area 
                   type="monotone" 
                   dataKey="predatorCount" 
-                  stackId="1" 
-                  stroke="#b91072ff" 
-                  fill="url(#colorParasitoid)" 
+                  stroke="#2110b9ff" 
+                  fill="url(#colorPredator)" 
                   name="Predators" 
                   strokeWidth={2}
               />
@@ -200,7 +201,7 @@ export  const PopulationGraph = ({ data }: { data: WeekData[] }) => {
                 <Line 
                     type="monotone" 
                     dataKey="Pest_Immigration" 
-                    stroke="#1d4ed8" 
+                    stroke="#d81d58ff" 
                     strokeWidth={2}
                     dot={{ r: 4 }}
                     name="Pest Immigration" 
@@ -208,7 +209,7 @@ export  const PopulationGraph = ({ data }: { data: WeekData[] }) => {
                 <Line 
                     type="monotone" 
                     dataKey="Parasitoid_Immigration" 
-                    stroke="#fbbf24" 
+                    stroke="#2b24fbff" 
                     strokeWidth={2}
                     dot={{ r: 4 }}
                     name="Parasitoid Immigration" 
