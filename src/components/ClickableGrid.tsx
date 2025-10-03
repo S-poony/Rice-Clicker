@@ -19,7 +19,7 @@ export function ClickableGrid({
   buttonStates,
   setButtonStates,
 }: ClickableGridProps) {
-  // Reset grid when dimensions change
+  // Reset grid if dimensions change
   useEffect(() => {
     const totalButtons = width * height;
     setButtonStates(new Array(totalButtons).fill(0));
@@ -47,7 +47,7 @@ export function ClickableGrid({
       case 2:
         return "bg-amber-800 hover:bg-amber-900 border-amber-800"; 
       case 3:
-        return "";//dead (red) cells are not red but invisible
+        return ""; // dead (red) cells are not red but invisible
       default:
         return "bg-green-500 hover:bg-green-600 border-green-500";
     }
@@ -68,29 +68,50 @@ export function ClickableGrid({
     }
   };
 
+  // total buttons (defensive)
+  const total = width * height;
+  const normalizedStates =
+    buttonStates.length === total
+      ? buttonStates
+      : new Array(total).fill(0).map((_, i) => buttonStates[i] ?? 0);
+
   return (
     <div className="flex flex-col gap-4">
+      {/* 
+        w-full -> allow grid to use full width of container
+        max-w-[640px] -> caps width on large screens so grid doesn't get huge
+        mx-auto -> horizontally center the grid
+        p-4 bg-muted rounded-lg box-border -> preserve original styling, box-border prevents overflow issues
+      */}
       <div
-        className="grid gap-1 p-4 bg-muted rounded-lg"
+        className="grid gap-1 p-4 bg-muted rounded-lg box-border w-full max-w-[640px] mx-auto"
         style={{
           gridTemplateColumns: `repeat(${width}, minmax(0, 1fr))`,
-          maxWidth: "fit-content",
         }}
       >
-        {buttonStates.map((state, index) => (
-          <button
-            key={index}
-            onClick={() => clickButton(index)}
-            className={`
-              w-8 h-8 border-2 rounded transition-all duration-150 hover:scale-105 active:scale-95 text-white
-              ${getButtonColor(state)}
-              ${state === 3 || layersToRemove === 0 ? 'cursor-not-allowed opacity-90' : 'cursor-pointer'}
-            `}
-            title={`Rice pad ${Math.floor(index / width) + 1},${(index % width) + 1} - ${getStateLabel(state)}`}
-            disabled={state === 3 || layersToRemove === 0}
-          />
-        ))}
+        {normalizedStates.map((state, index) => {
+          // state === 3 => invisible/dead: keep DOM element but visually hidden and non-interactive
+          const invisible = state === 3;
+          return (
+            <button
+              key={index}
+              onClick={() => clickButton(index)}
+              className={`
+                w-full aspect-square border-2 rounded transition-all duration-150 hover:scale-105 active:scale-95 text-white
+                flex items-center justify-center text-xs sm:text-sm select-none focus:outline-none focus:ring-2 focus:ring-offset-1
+                ${getButtonColor(state)}
+                ${invisible ? "opacity-0 pointer-events-none" : ""}
+                ${state === 3 || layersToRemove === 0 ? "cursor-not-allowed opacity-90" : "cursor-pointer"}
+              `}
+              title={`Rice pad ${Math.floor(index / width) + 1},${(index % width) + 1} - ${getStateLabel(state)}`}
+              disabled={state === 3 || layersToRemove === 0}
+              aria-hidden={invisible}
+            />
+          );
+        })}
       </div>
     </div>
   );
 }
+
+export default ClickableGrid;

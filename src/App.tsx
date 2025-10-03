@@ -321,31 +321,34 @@ export default function App() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2 space-y-4">
-              <Card className="bg-white/80 backdrop-blur-sm">
-                <CardContent className="flex flex-col items-center space-y-4 pt-6">
-                  {layersToRemove === 0 && !isGameOver && (
-                    <PestControl
-                      onSpray={() => handlePestChoice(true)}
-                      onPass={() => handlePestChoice(false)}
-                      onPerilla={() => handlePestChoice(false, true)}
-                      weekNumber={weekNumber}
-                    />
-                  )}
-                  <ClickableGrid
-                    width={gridWidth}
-                    height={gridHeight}
-                    layersToRemove={layersToRemove}
-                    onDecrementLayers={handleDecrementLayers}
-                    buttonStates={buttonStates}
-                    setButtonStates={setButtonStates}
-                  />
-                  <h3 className="text-xl font-semibold tracking-tight pt-2">Your Field</h3>
-                </CardContent>
-              </Card>
+                <Card className="bg-white">
+                  <CardContent className="flex flex-col items-stretch space-y-4 pt-6">
+                    {layersToRemove === 0 && !isGameOver && (
+                      <PestControl
+                        onSpray={() => handlePestChoice(true)}
+                        onPass={() => handlePestChoice(false)}
+                        onPerilla={() => handlePestChoice(false, true)}
+                        weekNumber={weekNumber}
+                      />
+                    )}
+                    {/* Ensure grid fills available width on mobile */}
+                    <div className="display: flex; justify-content: center; ">
+                      <ClickableGrid
+                        width={gridWidth}
+                        height={gridHeight}
+                        layersToRemove={layersToRemove}
+                        onDecrementLayers={handleDecrementLayers}
+                        buttonStates={buttonStates}
+                        setButtonStates={setButtonStates}
+                      />
+                    </div>
+                    <h3 className="text-xl font-semibold tracking-tight pt-2">Your Field</h3>
+                  </CardContent>
+                </Card>
             </div>
             <div className="space-y-6">
               
-              <Card className="bg-white/80 backdrop-blur-sm">
+              <Card className="bg-white">
                 <CardHeader>
                   <CardTitle>Learn More</CardTitle>
                 </CardHeader>
