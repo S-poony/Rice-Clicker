@@ -59,6 +59,21 @@ export default function App() {
     new Array(gridWidth * gridHeight).fill(0)
   );
 
+// Define the breakpoint for 'md' (medium screen)
+  const MD_BREAKPOINT = 768;
+
+  // --- Responsive State Hook ---
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= MD_BREAKPOINT);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLargeScreen(window.innerWidth >= MD_BREAKPOINT);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
   // load tips once from public/TipnpsList.json
   useEffect(() => {
     fetch("TipsList.json", { cache: "no-cache" })
@@ -255,10 +270,20 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen p-4 relative">
-      <div className="absolute inset-0 bg-background -z-20" />
+    <div style={{ minHeight: '100vh', padding: '1rem', position: 'relative' }}>
+      <div 
+        style={{ 
+          position: 'absolute', 
+          top: 0, 
+          right: 0, 
+          bottom: 0, 
+          left: 0, 
+          backgroundColor: '#f8f8f8', // Approximation of bg-background
+          zIndex: -20 
+        }} 
+      />
       {perilla && <FlowerField />} 
-      <div className="relative z-10">
+      <div style={{ position: 'relative', zIndex: 10 }}>
         {weekNumber>0 && (
           <Popup
           title="Your field is infested!"
@@ -284,10 +309,23 @@ export default function App() {
           open={pestCount - mutantPestCount < 0}
         />
 
-        <div className="max-w-6xl mx-auto space-y-6">
-          <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Rice Clicker</h1>
-            <p className="text-muted-foreground md:text-xl">
+        <div style={{ maxWidth: '72rem', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' /* space-y-6 */ }}>
+          <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '0.5rem' /* space-y-2 */ }}>
+            <h1 
+              style={{ 
+                fontSize: '2.5rem', // Approximation of text-5xl
+                fontWeight: '700', 
+                letterSpacing: '-0.05em' 
+              }}
+            >
+              Rice Clicker
+            </h1>
+            <p 
+              style={{ 
+                color: '#6b7280', // Approximation of text-muted-foreground
+                fontSize: '1.25rem' // Approximation of md:text-xl
+              }}
+            >
               {weekNumber===0 ? 
               "Welcome to your rice field! There is currently no pest infestation, decide what to do before starting the first week." :
               "This field is full of Brown Plant Hoppers, a common pest in rice. But there are also wasps and spiders that prey on them."}
@@ -297,10 +335,10 @@ export default function App() {
           </div>
 
           {weekNumber > 0 && (
-              <Card className="bg-white/80">
+              <Card style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
                 <CardHeader>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent style={{ display: 'flex', flexDirection: 'column', gap: '1rem' /* space-y-4 */ }}>
                   <Button onClick={() => setInsectDiversityOpen(true)}>Assess Insect Diversity</Button>
                   <Scoreboard
                     score={score}
@@ -311,7 +349,7 @@ export default function App() {
                     weekNumber={weekNumber}
                   />
                   {weekNumber > 1 && (
-                    <p className="text-sm text-muted-foreground">
+                    <p style={{ fontSize: '0.875rem', color: '#6b7280' /* text-sm text-muted-foreground */ }}>
                       BPH eaten by wasps and spiders: {totalPestsEaten} <br />
                       Average number of pests coming from neighbouring fields: {averageOutsidePests}
                     </p>
@@ -320,10 +358,31 @@ export default function App() {
               </Card>
              )}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-2 space-y-4">
-                <Card className="bg-white">
-                  <CardContent className="flex flex-col items-stretch space-y-4 pt-6">
+          <div 
+            style={{ 
+              display: 'grid', 
+              gridTemplateColumns: isLargeScreen ? 'repeat(3, 1fr)' : '1fr',
+              gap: '1.5rem' // gap-6
+            }}
+          >
+            <div 
+              style={{ 
+                gridColumn: 'span 2', // Approximation of md:col-span-2
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '1rem' /* space-y-4 */ 
+              }}
+            >
+                <Card style={{ backgroundColor: 'white' }}>
+                  <CardContent 
+                    style={{ 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      alignItems: 'stretch', 
+                      gap: '1rem', // space-y-4
+                      paddingTop: '1.5rem' // pt-6
+                    }}
+                  >
                     {layersToRemove === 0 && !isGameOver && (
                       <div
                         style={{
@@ -384,21 +443,21 @@ export default function App() {
                       </div>
                     </div>
 
-                    <h3 className="text-xl font-semibold tracking-tight pt-2">Your Field</h3>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: '600', letterSpacing: '-0.025em', paddingTop: '0.5rem' /* text-xl font-semibold tracking-tight pt-2 */ }}>Your Field</h3>
                   </CardContent>
                 </Card>
 
             </div>
-            <div className="space-y-6">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' /* space-y-6 */ }}>
               
-              <Card className="bg-white">
+              <Card style={{ backgroundColor: 'white' }}>
                 <CardHeader>
                   <CardTitle>Learn More</CardTitle>
                 </CardHeader>
-                <CardContent className="flex flex-col items-center space-y-2">
+                <CardContent style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' /* space-y-2 */ }}>
                   <Button onClick={showRandomTip}>Get a Tip</Button>
-                  <p className="text-sm text-center text-muted-foreground pt-2">
-                    Want to learn more? Visit the <a href="https://github.com/S-poony/Rice-Clicker" className="underline">project repository</a>.
+                  <p style={{ fontSize: '0.875rem', textAlign: 'center', color: '#6b7280', paddingTop: '0.5rem' /* text-sm text-center text-muted-foreground pt-2 */ }}>
+                    Want to learn more? Visit the <a href="https://github.com/S-poony/Rice-Clicker" style={{ textDecoration: 'underline' }}>project repository</a>.
                   </p>
                 </CardContent>
               </Card>
