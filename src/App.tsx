@@ -125,6 +125,7 @@ export default function App() {
 
   // IMPORTANT: this handler now accepts one parameter per method to pest control. Keep in mind states are synchronous.
   const handlePestChoice = (pesticideApplied: boolean, perillaApplied = false) => {
+    console.log("handlePestChoice called:", { weekNumber, pesticideApplied, perillaApplied, layersToRemove, averageOutsideParasitoids,  });
     if (weekNumber === 0) {
       // This is the setup turn. Apply agroecological choices.
       let boostedInitialParasitoidCount = initialParasitoidCount;
@@ -331,16 +332,18 @@ export default function App() {
                         weekNumber={weekNumber}
                       />
                     )}
-                    {/* Ensure grid fills available width on mobile */}
                     <div className="display: flex; justify-content: center; ">
-                      <ClickableGrid
-                        width={gridWidth}
-                        height={gridHeight}
-                        layersToRemove={layersToRemove}
-                        onDecrementLayers={handleDecrementLayers}
-                        buttonStates={buttonStates}
-                        setButtonStates={setButtonStates}
-                      />
+                      {/* Ensure grid fills available width on mobile */}
+                      <div className="w-full max-w-full">
+                        <ClickableGrid
+                          width={gridWidth}
+                          height={gridHeight}
+                          layersToRemove={layersToRemove}
+                          onDecrementLayers={handleDecrementLayers}
+                          buttonStates={buttonStates}
+                          setButtonStates={setButtonStates}
+                        />
+                      </div>
                     </div>
                     <h3 className="text-xl font-semibold tracking-tight pt-2">Your Field</h3>
                   </CardContent>
