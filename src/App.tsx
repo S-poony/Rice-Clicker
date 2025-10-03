@@ -117,7 +117,7 @@ export default function App() {
   const greenCells = buttonStates.filter((state) => state === 0).length;
   const yellowCells = buttonStates.filter((state) => state === 1).length;
   const brownCells = buttonStates.filter((state) => state === 2).length;
-  const score = weekNumber * (greenCells + yellowCells + brownCells / 3);
+  const score = (6 * greenCells + 3 * yellowCells + brownCells) * weekNumber;
 
   useEffect(() => {
     // This effect is now empty as initial calculation is handled in the setup phase
@@ -334,29 +334,30 @@ export default function App() {
             
           </div>
 
-          {weekNumber > 0 && (
-              <Card style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
+              <Card style={{ backgroundColor: 'rgba(255, 255, 255, 0.7)' }}>
                 <CardHeader>
                 </CardHeader>
                 <CardContent style={{ display: 'flex', flexDirection: 'column', gap: '1rem' /* space-y-4 */ }}>
                   <Button onClick={() => setInsectDiversityOpen(true)}>Assess Insect Diversity</Button>
-                  <Scoreboard
-                    score={score}
-                    pesticideSprayCount={pesticideSprayCount}
-                  />
-                  <LayerControls
-                    layersToRemove={layersToRemove}
-                    weekNumber={weekNumber}
-                  />
+                  {weekNumber > 0 && (
+                    <div> 
+                    <Scoreboard
+                      score={score}
+                      pesticideSprayCount={pesticideSprayCount}
+                    />
+                    <LayerControls
+                      layersToRemove={layersToRemove}
+                      weekNumber={weekNumber}
+                    />
+                    </div>
+                  )}
                   {weekNumber > 1 && (
                     <p style={{ fontSize: '0.875rem', color: '#6b7280' /* text-sm text-muted-foreground */ }}>
                       BPH eaten by wasps and spiders: {totalPestsEaten} <br />
-                      Average number of pests coming from neighbouring fields: {averageOutsidePests}
                     </p>
                   )}
                 </CardContent>
               </Card>
-             )}
 
           <div 
             style={{ 

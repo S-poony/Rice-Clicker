@@ -26,7 +26,7 @@ export const FlowerField: React.FC = () => {
             position: 'absolute',
             top: `${Math.random() * 100}%`,
             left: `${Math.random() * 100}%`,
-            opacity: .2,
+            opacity: .3,
             zIndex: 1, // Move behind content
           } as React.CSSProperties,
           color,
