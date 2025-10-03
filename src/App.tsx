@@ -8,6 +8,8 @@ import { Popup } from "./components/Popup";
 import { Button } from "./components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import { FlowerField } from "./components/FlowerField";
+import { PopulationGraph, WeekData } from "./components/Graph"; 
+import { Header } from "./components/ui/dialog";
 
 type Tip = {
   title: string;
@@ -35,6 +37,7 @@ const parasitoidConsumptionRate = 1.1;
 const predatorConsumptionRate = 2.5;
 
 export default function App() {
+  const [simulationHistory, setSimulationHistory] = useState<WeekData[]>([]); 
   const [insectDiversityOpen, setInsectDiversityOpen] = useState<boolean>(false);
 
   const [tipsOpen, setTipsOpen] = useState<boolean>(false);
@@ -253,6 +256,18 @@ export default function App() {
     const nextParasitoidCount = survivingParasitoids * parasitoidReproductionRate + outsideParasitoids;
     const nextPredatorCount = survivingPredators * predatorReproductionRate;
 
+    // 1. Create the new data object (currentWeekData is defined here)
+    const currentWeekData: WeekData = {
+      week: weekNumber,
+      normalPestCount: nextPestCount,
+      mutantPestCount: nextMutantPestCount,
+      parasitoidCount: nextParasitoidCount,
+      predatorCount: nextPredatorCount,
+      // Ensure these values are also calculated in your logic:
+      Pest_Immigration: outsidePests, 
+      Parasitoid_Immigration: outsideParasitoids, 
+    };
+
     setPestCount(nextPestCount);
     setMutantPestCount(nextMutantPestCount);
     setParasitoidCount(nextParasitoidCount);
@@ -263,6 +278,9 @@ export default function App() {
     const newLayersToRemove = Math.ceil(((cropsEaten / cropsPerLayer)) / (((gridWidth * gridHeight) * 3) / (greenCells * 3 + yellowCells * 2 + brownCells))) ;
 
     setLayersToRemove(newLayersToRemove);
+
+    // Append the new data to the history array
+    setSimulationHistory((prevHistory) => [...prevHistory, currentWeekData]);
     setWeekNumber((prev) => prev + 1);
     setTotalPestsEaten(Math.ceil(totalPestsEaten));
 
@@ -345,6 +363,7 @@ export default function App() {
                       score={score}
                       pesticideSprayCount={pesticideSprayCount}
                     />
+            <br />
                     <LayerControls
                       layersToRemove={layersToRemove}
                       weekNumber={weekNumber}
@@ -449,6 +468,13 @@ export default function App() {
                 </Card>
 
             </div>
+
+            {weekNumber > 2 && (
+            <PopulationGraph data={simulationHistory} />
+            )}
+
+           <br />
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' /* space-y-6 */ }}>
               
               <Card style={{ backgroundColor: 'white' }}>
@@ -462,6 +488,7 @@ export default function App() {
                   </p>
                 </CardContent>
               </Card>
+
               <Popup
                 title="Insect Diversity"
                 content={<>
@@ -493,5 +520,4 @@ export default function App() {
       </div>
     </div>
   );
-
 }
