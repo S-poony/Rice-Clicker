@@ -469,14 +469,13 @@ export default function App() {
 
             </div>
 
-            {weekNumber > 2 && (
-            <PopulationGraph data={simulationHistory} />
-            )}
-
-           <br />
+            
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' /* space-y-6 */ }}>
-              
+              {weekNumber > 2 && (
+              <PopulationGraph data={simulationHistory} />
+              )}
+             <br />
               <Card style={{ backgroundColor: 'white' }}>
                 <CardHeader>
                   <CardTitle>Learn More</CardTitle>
