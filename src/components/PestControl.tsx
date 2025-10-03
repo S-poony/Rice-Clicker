@@ -12,28 +12,44 @@ export function PestControl({ weekNumber, onSpray, onPass, onPerilla }: PestCont
   const isSetupWeek = weekNumber === 0;
 
   return (
-    <div className="flex flex-col items-center gap-2 my-4">
-      <div className="flex gap-4">
+    <div style={{ width: "100%", boxSizing: "border-box", margin: "12px 0" }}>
+      <div style={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: 12,
+        justifyContent: "center",
+        alignItems: "center",
+      }}>
         {isSetupWeek ? (
           <>
-            <Button onClick={onPerilla} variant="outline">
-              <h3 className="text-lg font-semibold">Plant flowers</h3>
-            </Button>
-            <Button onClick={onSpray} variant="outline">
-              <h3 className="text-lg font-semibold">Spray pesticide</h3>
-            </Button>
+            <div style={{ flex: "1 1 120px", minWidth: 0 }}>
+              <Button onClick={() => { console.log("PestControl: Plant clicked"); onPerilla(); }} variant="outline" style={{ width: "100%" } as any}>
+                <h3 style={{ margin: 0, fontSize: 14 }}>Plant flowers</h3>
+              </Button>
+            </div>
+
+            <div style={{ flex: "1 1 120px", minWidth: 0 }}>
+              <Button onClick={() => { console.log("PestControl: Spray clicked"); onSpray(); }} variant="outline" style={{ width: "100%" } as any}>
+                <h3 style={{ margin: 0, fontSize: 14 }}>Spray pesticide</h3>
+              </Button>
+            </div>
           </>
         ) : (
-          <>
-            <Button onClick={onSpray} variant="outline">
-              <h3 className="text-lg font-semibold">Spray pesticide</h3>
+          <div style={{ flex: "1 1 120px", minWidth: 0 }}>
+            <Button onClick={() => { console.log("PestControl: Spray clicked"); onSpray(); }} variant="outline" style={{ width: "100%" } as any}>
+              <h3 style={{ margin: 0, fontSize: 14 }}>Spray pesticide</h3>
             </Button>
-          </>
+          </div>
         )}
-           <Button onClick={onPass} variant="outline">
-              <h3 className="text-lg font-semibold">Pass</h3>
-            </Button>
+
+        <div style={{ flex: "1 1 120px", minWidth: 0 }}>
+          <Button onClick={() => { console.log("PestControl: Pass clicked"); onPass(); }} variant="outline" style={{ width: "100%" } as any}>
+            <h3 style={{ margin: 0, fontSize: 14 }}>Pass</h3>
+          </Button>
+        </div>
       </div>
     </div>
   );
 }
+
+export default PestControl;

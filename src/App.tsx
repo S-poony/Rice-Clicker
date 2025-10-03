@@ -125,7 +125,7 @@ export default function App() {
 
   // IMPORTANT: this handler now accepts one parameter per method to pest control. Keep in mind states are synchronous.
   const handlePestChoice = (pesticideApplied: boolean, perillaApplied = false) => {
-    console.log("handlePestChoice called:", { weekNumber, pesticideApplied, perillaApplied, layersToRemove, averageOutsideParasitoids,  });
+    console.log("handlePestChoice called:", { weekNumber, pesticideApplied, perillaApplied, layersToRemove, averageOutsideParasitoids,  }); //debug
     if (weekNumber === 0) {
       // This is the setup turn. Apply agroecological choices.
       let boostedInitialParasitoidCount = initialParasitoidCount;
@@ -325,16 +325,54 @@ export default function App() {
                 <Card className="bg-white">
                   <CardContent className="flex flex-col items-stretch space-y-4 pt-6">
                     {layersToRemove === 0 && !isGameOver && (
-                      <PestControl
-                        onSpray={() => handlePestChoice(true)}
-                        onPass={() => handlePestChoice(false)}
-                        onPerilla={() => handlePestChoice(false, true)}
-                        weekNumber={weekNumber}
-                      />
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          width: "100%",
+                          boxSizing: "border-box",
+                        }}
+                        data-pest-root="true"
+                      >
+                        <div
+                          style={{
+                            width: "100%",
+                            maxWidth: 640,
+                            boxSizing: "border-box",
+                            minWidth: 0, // <-- empêche le contenu d'imposer une largeur minimale
+                            padding: "6px 8px",
+                          }}
+                          data-pest-inner="true"
+                        >
+                          <PestControl
+                            onSpray={() => handlePestChoice(true)}
+                            onPass={() => handlePestChoice(false)}
+                            onPerilla={() => handlePestChoice(false, true)}
+                            weekNumber={weekNumber}
+                          />
+                        </div>
+                      </div>
                     )}
-                    <div className="display: flex; justify-content: center; ">
-                      {/* Ensure grid fills available width on mobile */}
-                      <div className="w-full max-w-full">
+
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        width: "100%",
+                        boxSizing: "border-box",
+                      }}
+                      data-grid-root="true"
+                    >
+                      <div
+                        style={{
+                          width: "100%",
+                          maxWidth: 640, // cap on large screens
+                          padding: "0 8px", // small horizontal padding on mobile
+                          boxSizing: "border-box",
+                          minWidth: 0, // <-- crucial: allow the grid to shrink inside flex parents
+                        }}
+                        data-grid-inner="true"
+                      >
                         <ClickableGrid
                           width={gridWidth}
                           height={gridHeight}
@@ -345,9 +383,11 @@ export default function App() {
                         />
                       </div>
                     </div>
+
                     <h3 className="text-xl font-semibold tracking-tight pt-2">Your Field</h3>
                   </CardContent>
                 </Card>
+
             </div>
             <div className="space-y-6">
               
