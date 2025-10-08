@@ -24,6 +24,8 @@ const initialParasitoidCount = Math.random() * 20;
 const initialPredatorCount = Math.random() * 10;
 const flowerBoost = 2;
 const perillaParasitoidBoost = 2;
+const MUTANT_PEST_REPRODUCTION_RATE = (2 * 7) / 10.42;
+const PEST_REPRODUCTION_RATE = (2 * 7) / 10.42;
 const parasitoidReproductionRate = 1.25;
 const predatorReproductionRate = 1.1;
 const ReproductionBoost = 1.6;
@@ -243,12 +245,11 @@ export default function App() {
       let predatorStart = initialPredatorCount;
 
       if (pesticideApplied) {
-        // Apply pesticide effects immediately to the starting populations for week 1
-        pestStart *= pestSurvivalRate;
+        // pests are not affected this turn because they appear on week 1
+        pestStart *= 1
+        mutantStart *= 1
         parasitoidStart *= parasitoidSurvivalRate;
         predatorStart *= predatorSurvivalRate;
-        // Mutants are not affected
-        mutantStart *= MutantPestPesticideSurvivalRate;
         setPesticideSprayCount((prev) => prev + 1);
       }
 
@@ -301,8 +302,8 @@ export default function App() {
 
     // --- Start of Simulation Logic ---
     // 1. Determine reproduction rates based on pesticide history
-    let pestReproductionRate = (2 * 7) / 10.42;
-    let mutantPestReproductionRate = (2 * 7) / 10.42;
+    let pestReproductionRate = PEST_REPRODUCTION_RATE
+    let mutantPestReproductionRate = MUTANT_PEST_REPRODUCTION_RATE
     if (sprayedCount > 0) {
       pestReproductionRate = ReproductionBoost;
       mutantPestReproductionRate = MutantPestReproductionBoost;
@@ -387,7 +388,7 @@ export default function App() {
           right: 0, 
           bottom: 0, 
           left: 0, 
-          backgroundColor: '#f8f8f8', // Approximation of bg-background
+          backgroundColor: 'light gray',
           zIndex: -20 
         }} 
       />
@@ -415,7 +416,7 @@ export default function App() {
               <br />Using pesticides will not reduce their numbers, but it will harm the beneficial insects that control the regular BPH population. 
             </>
           }
-          open={pestCount - mutantPestCount < 0}
+          open={pestCount - mutantPestCount < 0 && weekNumber > 0}
         />
 
         <div style={{ maxWidth: '72rem', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' /* space-y-6 */ }}>
