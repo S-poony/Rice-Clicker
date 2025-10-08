@@ -374,18 +374,17 @@ export default function App() {
             </p>
             
           </div>
+        
+          <LayerControls
+            layersToRemove={layersToRemove}
+            weekNumber={weekNumber}
+          />
+          {weekNumber > 1 && (
+            <p style={{ fontSize: '0.875rem', color: '#6b7280' /* text-sm text-muted-foreground */ }}>
+              BPH eaten by wasps and spiders: {totalPestsEaten} <br />
+            </p>
+          )}
           
-                  {weekNumber > 0 && (
-                    <LayerControls
-                      layersToRemove={layersToRemove}
-                      weekNumber={weekNumber}
-                    />
-                  )}
-                  {weekNumber > 1 && (
-                    <p style={{ fontSize: '0.875rem', color: '#6b7280' /* text-sm text-muted-foreground */ }}>
-                      BPH eaten by wasps and spiders: {totalPestsEaten} <br />
-                    </p>
-                  )}
           <div 
             style={{ 
               display: 'grid', 
@@ -481,7 +480,7 @@ export default function App() {
             
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' /* space-y-6 */ }}>
-              {weekNumber && (
+              {weekNumber > 0 && (
               <PopulationGraph data={simulationHistory} />
               )}
              <br />
