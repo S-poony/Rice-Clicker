@@ -102,10 +102,21 @@ export default function App() {
   };
 
   // Simulation state
-  const [pestCount, setPestCount] = useState(0);
-  const [mutantPestCount, setMutantPestCount] = useState(0);
+  const [pestCount, setPestCount] = useState(initialPestCount);
+  const [mutantPestCount, setMutantPestCount] = useState(initialMutantPestCount);
   const [parasitoidCount, setParasitoidCount] = useState(initialParasitoidCount);
   const [predatorCount, setPredatorCount] = useState(initialPredatorCount);
+
+  // Initialize simulationHistory with the Week 0 data
+  const initialWeek0Data: WeekData = {
+    week: 0,
+    normalPestCount: initialPestCount,
+    mutantPestCount: initialMutantPestCount,
+    parasitoidCount: initialParasitoidCount,
+    predatorCount: initialPredatorCount,
+    Pest_Immigration: 0, 
+    Parasitoid_Immigration: 0,
+  };
 
   useEffect(() => {
     console.log({
@@ -144,14 +155,16 @@ export default function App() {
   // IMPORTANT: this handler now accepts one parameter per method to pest control. Keep in mind states are synchronous.
   const handlePestChoice = (pesticideApplied: boolean, perillaApplied = false) => {
     console.log("handlePestChoice called:", { weekNumber, pesticideApplied, perillaApplied, layersToRemove, averageOutsideParasitoids,  }); //debug
+    // SETUP PHASE
     if (weekNumber === 0) {
-      // This is the setup turn. Apply agroecological choices.
       let boostedInitialParasitoidCount = initialParasitoidCount;
+      let nextWeekParasitoidImmigration = 0;
       if (perillaApplied) {
         setPerilla(true);
-        // Boost initial parasitoids and establish outside population if flowers are planted
         boostedInitialParasitoidCount *= flowerBoost;
-        setAverageOutsideParasitoids(perillaParasitoidBoost);
+        const perillaBoostValue = perillaParasitoidBoost;
+        setAverageOutsideParasitoids(perillaBoostValue);
+        nextWeekParasitoidImmigration = Math.random() * perillaBoostValue * 2;
       }
       if (pesticideApplied) {
         setPesticideScheduled(true);
@@ -181,6 +194,17 @@ export default function App() {
       const pestTotal = pestStart + mutantStart;
       const cropsEaten = pestTotal * pestConsumptionRate;
       const initialLayers = Math.ceil(cropsEaten / cropsPerLayer);
+
+        const weekOneData: WeekData = {
+          week: 1, // This is the data after the initial choices and the first 'turn'
+          normalPestCount: pestStart,
+          mutantPestCount: mutantStart,
+          parasitoidCount: parasitoidStart,
+          predatorCount: predatorStart,
+          Pest_Immigration: 0, // No immigration yet for the first calculated step
+          Parasitoid_Immigration: nextWeekParasitoidImmigration
+        };
+      setSimulationHistory((prevHistory) => [...prevHistory, weekOneData]);
       setLayersToRemove(initialLayers);
 
       setWeekNumber(1);
@@ -255,9 +279,9 @@ export default function App() {
     const nextParasitoidCount = survivingParasitoids * parasitoidReproductionRate + outsideParasitoids;
     const nextPredatorCount = survivingPredators * predatorReproductionRate;
 
-    // 1. Create the new data object (currentWeekData is defined here)
-    const currentWeekData: WeekData = {
-      week: weekNumber,
+    // 1. Create the new data object (nextWeekData is defined here)
+    const nextWeekData: WeekData = {
+      week: weekNumber + 1,
       normalPestCount: nextPestCount,
       mutantPestCount: nextMutantPestCount,
       parasitoidCount: nextParasitoidCount,
@@ -279,7 +303,7 @@ export default function App() {
     setLayersToRemove(newLayersToRemove);
 
     // Append the new data to the history array
-    setSimulationHistory((prevHistory) => [...prevHistory, currentWeekData]);
+    setSimulationHistory((prevHistory) => [...prevHistory, nextWeekData]);
     setWeekNumber((prev) => prev + 1);
     setTotalPestsEaten(Math.ceil(totalPestsEaten));
 
@@ -343,7 +367,7 @@ export default function App() {
                 fontSize: '1.25rem' // Approximation of md:text-xl
               }}
             >
-              {weekNumber===0 ? 
+              {weekNumber=== 0 ? 
               "Welcome to your rice field! There is currently no pest infestation, decide what to do before starting the first week." :
               "This field is full of Brown Plant Hoppers, a common pest in rice. But there are also wasps and spiders that prey on them."}
               
@@ -457,7 +481,7 @@ export default function App() {
             
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' /* space-y-6 */ }}>
-              {weekNumber > 2 && (
+              {weekNumber && (
               <PopulationGraph data={simulationHistory} />
               )}
              <br />
