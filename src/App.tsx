@@ -38,21 +38,37 @@ const predatorConsumptionRate = 2.5;
 
 export default function App() {
   const [simulationHistory, setSimulationHistory] = useState<WeekData[]>([]); 
+ // --- Paste this updated function inside the 'App' functional component ---
+
   const downloadDataCSV = () => {
     if (simulationHistory.length === 0) {
       alert("No simulation data to download yet.");
       return;
     }
 
-    // 1. Get the headers (keys from the first object in the array)
-    const headers = Object.keys(simulationHistory[0]);
-    const csvHeaders = headers.join(',');
+    // Define the mapping from internal variable names (keys) to descriptive column names (values)
+    const columnMap = {
+      week: 'Week',
+      normalPestCount: 'BPH (Normal)',
+      mutantPestCount: 'BPH (Mutant)',
+      parasitoidCount: 'Parasitoids (Wasps)',
+      predatorCount: 'Predators (Spiders)',
+      Pest_Immigration: 'BPH Immigration Rate',
+      Parasitoid_Immigration: 'Parasitoid Immigration Rate',
+    };
+
+    // Get the keys in the defined order to ensure columns are consistent
+    const keysInOrder = Object.keys(columnMap) as (keyof WeekData)[];
+
+    // 1. Generate the CSV Headers from the map's DESCRIPTIVE VALUES
+    const csvHeaders = Object.values(columnMap).join(',');
 
     // 2. Convert the data array to CSV rows
     const csvRows = simulationHistory.map(row => {
-      // Use the headers array to ensure the order of columns is consistent
-      const values = headers.map(header => {
-        const value = (row as any)[header];
+      // Use the keysInOrder array to extract the data values in the correct order
+      const values = keysInOrder.map(key => {
+        const value = row[key]; // Access data using the defined key
+        
         // Handle floating point numbers by rounding to 2 decimal places
         if (typeof value === 'number') {
           return Math.round(value * 100) / 100;
@@ -71,7 +87,7 @@ export default function App() {
     
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', 'RiceClicker_Data.csv');
+    link.setAttribute('download', 'rice_bph_simulation_data.csv');
     
     // Append the link to the body, click it, and remove it
     document.body.appendChild(link);
