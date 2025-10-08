@@ -429,13 +429,14 @@ export default function App() {
                       <div
                         style={{
                           width: "100%",
-                          maxWidth: 640, // cap on large screens
+                          maxWidth: 450, // cap on large screens
                           padding: "0 8px", // small horizontal padding on mobile
                           boxSizing: "border-box",
-                          minWidth: 0, // <-- crucial: allow the grid to shrink inside flex parents
+                          minWidth: 0, //allow the grid to shrink inside flex parents
                         }}
                         data-grid-inner="true"
                       >
+                       <CardHeader/>
                         <ClickableGrid
                           width={gridWidth}
                           height={gridHeight}
