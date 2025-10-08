@@ -188,6 +188,16 @@ export default function App() {
   const greenCells = buttonStates.filter((state) => state === 0).length;
   const yellowCells = buttonStates.filter((state) => state === 1).length;
   const brownCells = buttonStates.filter((state) => state === 2).length;
+  const totalCells = gridHeight * gridWidth;
+  const GREEN_YIELD = 3;
+  const YELLOW_YIELD = 2;
+  const BROWN_YIELD = 1;
+  const currentFieldYield = greenCells * GREEN_YIELD + yellowCells * YELLOW_YIELD + brownCells * BROWN_YIELD;
+  const MAX_FIELD_YIELD = totalCells * GREEN_YIELD;
+  const fieldDamage = Math.max(
+    1,
+    MAX_FIELD_YIELD / currentFieldYield
+  );
   const score = (6 * greenCells + 3 * yellowCells + brownCells) * weekNumber;
 
   useEffect(() => {
@@ -355,7 +365,8 @@ export default function App() {
 
     const nextPestTotal = nextPestCount + nextMutantPestCount;
     const cropsEaten = nextPestTotal * pestConsumptionRate;
-    const newLayersToRemove = Math.ceil(((cropsEaten / cropsPerLayer)) / (((gridWidth * gridHeight) * 3) / (greenCells * 3 + yellowCells * 2 + brownCells))) ;
+    const baseDamageInLayers = (nextPestTotal * pestConsumptionRate) / cropsPerLayer;
+    const newLayersToRemove = Math.ceil(baseDamageInLayers * fieldDamage);
 
     setLayersToRemove(newLayersToRemove);
 
