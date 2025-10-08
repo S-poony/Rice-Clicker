@@ -51,8 +51,8 @@ Try to beat me here: https://s-poony.github.io/Rice-Clicker/`;
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="flex justify-between items-center">
-            <p className="font-medium">Final Score:</p>
-            <p className="text-2xl font-bold">{score.toFixed(2)}</p>
+            <p className="font-medium">Final Yield:</p>
+            <p className="text-2xl font-bold">{score} tons</p>
           </div>
           <div className="flex justify-between items-center">
             <p className="font-medium">Total Pesticide Sprays:</p>

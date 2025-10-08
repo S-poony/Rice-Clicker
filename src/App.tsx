@@ -20,8 +20,8 @@ type Tip = {
 const cropsPerLayer = 30;
 const initialPestCount = Math.random() * 400;
 const initialMutantPestCount = Math.random() * 40;
-const initialParasitoidCount = Math.random() * 48;
-const initialPredatorCount = Math.random() * 16;
+const initialParasitoidCount = Math.random() * 20;
+const initialPredatorCount = Math.random() * 10;
 const flowerBoost = 2;
 const perillaParasitoidBoost = 2;
 const parasitoidReproductionRate = 1.25;
@@ -149,14 +149,13 @@ export default function App() {
       let boostedInitialParasitoidCount = initialParasitoidCount;
       if (perillaApplied) {
         setPerilla(true);
-        // Boost initial parasitoids and establish outside population
+        // Boost initial parasitoids and establish outside population if flowers are planted
         boostedInitialParasitoidCount *= flowerBoost;
         setAverageOutsideParasitoids(perillaParasitoidBoost);
       }
       if (pesticideApplied) {
         setPesticideScheduled(true);
       }
-      // We can add other agroecological methods here in the future
       
       let pestStart = initialPestCount;
       let mutantStart = initialMutantPestCount;
@@ -351,33 +350,18 @@ export default function App() {
             </p>
             
           </div>
-
-              <Card style={{ backgroundColor: 'rgba(255, 255, 255, 0.7)' }}>
-                <CardHeader>
-                </CardHeader>
-                <CardContent style={{ display: 'flex', flexDirection: 'column', gap: '1rem' /* space-y-4 */ }}>
-                  <Button onClick={() => setInsectDiversityOpen(true)}>Assess Insect Diversity</Button>
+          
                   {weekNumber > 0 && (
-                    <div> 
-                    <Scoreboard
-                      score={score}
-                      pesticideSprayCount={pesticideSprayCount}
-                    />
-            <br />
                     <LayerControls
                       layersToRemove={layersToRemove}
                       weekNumber={weekNumber}
                     />
-                    </div>
                   )}
                   {weekNumber > 1 && (
                     <p style={{ fontSize: '0.875rem', color: '#6b7280' /* text-sm text-muted-foreground */ }}>
                       BPH eaten by wasps and spiders: {totalPestsEaten} <br />
                     </p>
                   )}
-                </CardContent>
-              </Card>
-
           <div 
             style={{ 
               display: 'grid', 

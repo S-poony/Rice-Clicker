@@ -57,7 +57,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export  const PopulationGraph = ({ data }: { data: WeekData[] }) => {
   const chartRef = useRef<HTMLDivElement>(null);
 
-  // Placeholder function for downloading the chart (since lucide icons are removed)
+  // Placeholder function for downloading the chart
   const downloadChart = useCallback(() => {
     console.log('Download functionality triggered. Implement image export logic here.');
     alert('Download feature is a placeholder. See console for details.');
@@ -97,9 +97,9 @@ export  const PopulationGraph = ({ data }: { data: WeekData[] }) => {
 
       <CardContent className="flex flex-col w-full h-full space-y-4 p-0 pt-4">
 
-        {/* --- 1. Population Totals (Stacked Area Chart) --- */}
+        {/* --- 1. Population Totals (Pests and mutants are stacked) --- */}
         <div className="flex-1 w-full min-h-[300px]">
-          <h4 className="text-base font-semibold text-gray-700 mb-2">Population Counts (In-Field)</h4>
+          <h4 className="text-base font-semibold text-gray-700 mb-2">Population Counts</h4>
           <ResponsiveContainer width="100%" height="90%">
             <AreaChart 
                 data={data} 
@@ -108,7 +108,7 @@ export  const PopulationGraph = ({ data }: { data: WeekData[] }) => {
               <defs>
                 {/* Gradient for Normal Pest */}
                 <linearGradient id="colorNormal" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#bf4c99ff" stopOpacity={0.8}/>
+                  <stop offset="5%" stopColor="#ff1833ff" stopOpacity={0.8}/>
                   <stop offset="95%" stopColor="#c11e39ff" stopOpacity={0.1}/>
                 </linearGradient>
                 {/* Gradient for Mutant Pest */}
@@ -134,29 +134,31 @@ export  const PopulationGraph = ({ data }: { data: WeekData[] }) => {
                   label={{ value: 'Week', position: 'bottom', offset: 0, style: { fontWeight: '600', fill: '#4b5563' } }}
                   stroke="#9ca3af"
               />
-              <YAxis 
-                  label={{ value: 'Count', angle: -90, position: 'left', style: { fontWeight: '600', fill: '#4b5563' } }}
+              <YAxis //removed label for cleaner look
+                  label={{ value: '', angle: -90, position: 'left', offset: '-25', style: { fontWeight: '600', fill: '#4b5563' } }}
                   stroke="#9ca3af"
               />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ paddingTop: '10px' }} />
-              
-              <Area 
-                  type="monotone" //todo: normalize colors, stack mutant and normal pests, parasitoids and predators w/stackID= "1"
-                  dataKey="normalPestCount" 
-                  stroke="#ff2c2cff" 
-                  fill="url(#colorNormal)" 
-                  name="Normal Pests" 
-                  strokeWidth={2}
-              />
               <Area 
                   type="monotone" 
                   dataKey="mutantPestCount" 
+                  stackId={1}
                   stroke="#8d0075ff" 
                   fill="url(#colorMutant)" 
                   name="Mutant Pests" 
                   strokeWidth={2}
               />
+              <Area 
+                  type="monotone" //todo: normalize colors, stack mutant and normal pests, parasitoids and predators w/stackID= "1"
+                  dataKey="normalPestCount" 
+                  stackId={1}
+                  stroke="#ff2c2cff" 
+                  fill="url(#colorNormal)" 
+                  name="Pests" 
+                  strokeWidth={2}
+              />
+              
               <Area 
                   type="monotone" 
                   dataKey="parasitoidCount" 
@@ -191,8 +193,8 @@ export  const PopulationGraph = ({ data }: { data: WeekData[] }) => {
                     label={{ value: 'Week', position: 'bottom', offset: 0, style: { fontWeight: '600', fill: '#4b5563' } }}
                     stroke="#9ca3af"
                 />
-                <YAxis 
-                    label={{ value: 'Count', angle: -90, position: 'left', style: { fontWeight: '600', fill: '#4b5563' } }}
+                <YAxis //removed label for cleaner look
+                    label={{ value: '', angle: -90, position: 'left', offset: '-25', style: { fontWeight: '600', fill: '#4b5563' } }}
                     stroke="#9ca3af"
                 />
                 <Tooltip content={<CustomTooltip />} />
