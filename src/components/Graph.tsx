@@ -54,27 +54,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 // --- Population Graph Component (Main Export) ---
 
-export  const PopulationGraph = ({ data }: { data: WeekData[] }) => {
+export  const PopulationGraph = ({ data, onDownloadData }: { data: WeekData[], onDownloadData: () => void }) => {
   const chartRef = useRef<HTMLDivElement>(null);
-
-  // Placeholder function for downloading the chart
-  const downloadChart = useCallback(() => {
-    console.log('Download functionality triggered. Implement image export logic here.');
-    alert('Download feature is a placeholder. See console for details.');
-  }, [data.length]);
-  
-  // Guard clause for no data
-  if (!data || data.length === 0) {
-      return (
-        <Card className="shadow-lg h-[600px] flex items-center justify-center chart-container-style">
-            <CardContent className="p-12">
-                <p className="text-gray-400 text-lg text-center">
-                    No population data recorded yet. Run the simulation using "Next Week"!
-                </p>
-            </CardContent>
-        </Card>
-      );
-  }
 
   // --- Rendered Chart Structure ---
 
@@ -88,10 +69,10 @@ export  const PopulationGraph = ({ data }: { data: WeekData[] }) => {
         <Button 
             variant="outline" 
             size="sm"
-            onClick={downloadChart}
+            onClick={onDownloadData}
             className="text-sm border-gray-300 hover:bg-gray-50"
         >
-            💾 Download Data
+            Download Data
         </Button>
       </CardHeader>
 
@@ -150,7 +131,7 @@ export  const PopulationGraph = ({ data }: { data: WeekData[] }) => {
                   strokeWidth={2}
               />
               <Area 
-                  type="monotone" //todo: normalize colors, stack mutant and normal pests, parasitoids and predators w/stackID= "1"
+                  type="monotone" 
                   dataKey="normalPestCount" 
                   stackId={1}
                   stroke="#ff2c2cff" 

@@ -38,6 +38,47 @@ const predatorConsumptionRate = 2.5;
 
 export default function App() {
   const [simulationHistory, setSimulationHistory] = useState<WeekData[]>([]); 
+  const downloadDataCSV = () => {
+    if (simulationHistory.length === 0) {
+      alert("No simulation data to download yet.");
+      return;
+    }
+
+    // 1. Get the headers (keys from the first object in the array)
+    const headers = Object.keys(simulationHistory[0]);
+    const csvHeaders = headers.join(',');
+
+    // 2. Convert the data array to CSV rows
+    const csvRows = simulationHistory.map(row => {
+      // Use the headers array to ensure the order of columns is consistent
+      const values = headers.map(header => {
+        const value = (row as any)[header];
+        // Handle floating point numbers by rounding to 2 decimal places
+        if (typeof value === 'number') {
+          return Math.round(value * 100) / 100;
+        }
+        return value;
+      });
+      return values.join(',');
+    });
+
+    // 3. Combine headers and rows
+    const csvContent = [csvHeaders, ...csvRows].join('\n');
+
+    // 4. Create a Blob and trigger the download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'RiceClicker_Data.csv');
+    
+    // Append the link to the body, click it, and remove it
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const [insectDiversityOpen, setInsectDiversityOpen] = useState<boolean>(false);
 
   const [tipsOpen, setTipsOpen] = useState<boolean>(false);
@@ -481,7 +522,10 @@ export default function App() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' /* space-y-6 */ }}>
               {weekNumber > 0 && (
-              <PopulationGraph data={simulationHistory} />
+              <PopulationGraph 
+              data={simulationHistory} 
+              onDownloadData={downloadDataCSV}
+              />
               )}
              <br />
               <Card style={{ backgroundColor: 'white' }}>
