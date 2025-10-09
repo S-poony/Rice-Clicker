@@ -23,7 +23,7 @@ export interface WeekData {
   parasitoidCount: number;
   predatorCount: number;
   Pest_Immigration: number;
-  Parasitoid_Immigration: number;
+  yieldDamage: number;
 }
 
 // --- Custom Tooltip Component ---
@@ -160,9 +160,9 @@ export  const PopulationGraph = ({ data, onDownloadData }: { data: WeekData[], o
           </ResponsiveContainer>
         </div>
 
-        {/* --- 2. Immigration Line Chart --- */}
+        {/* --- 2. Yield Line Chart --- */}
         <div className="flex-1 w-full min-h-[200px] border-t pt-4 border-gray-200">
-          <h4 className="text-base font-semibold text-gray-700 mb-2">Immigration Rates</h4>
+          <h4 className="text-base font-semibold text-gray-700 mb-2">Rice pads damaged</h4>
           <ResponsiveContainer width="100%" height="90%">
             <LineChart 
                 data={data} 
@@ -180,22 +180,13 @@ export  const PopulationGraph = ({ data, onDownloadData }: { data: WeekData[], o
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                
                 <Line 
                     type="monotone" 
-                    dataKey="Pest_Immigration" 
-                    stroke="#d81d58ff" 
-                    strokeWidth={2}
-                    dot={{ r: 4 }}
-                    name="Pest Immigration" 
-                />
-                <Line 
-                    type="monotone" 
-                    dataKey="Parasitoid_Immigration" 
+                    dataKey="yieldDamage" 
                     stroke="#2b24fbff" 
                     strokeWidth={2}
                     dot={{ r: 4 }}
-                    name="Parasitoid Immigration" 
+                    name="Yield Damage" 
                 />
             </LineChart>
           </ResponsiveContainer>

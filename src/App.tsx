@@ -86,12 +86,12 @@ const getInitialState = (): AppState => ({
   buttonStates: new Array(GRID_HEIGHT * GRID_WIDTH).fill(0) as ButtonState[],
   simulationHistory: [{
     week: 0,
-    normalPestCount: initialPestCount,
-    mutantPestCount: initialMutantPestCount,
+    normalPestCount: 0,//pests appear only on week 1
+    mutantPestCount: 0,//pests appear only on week 1
     parasitoidCount: initialParasitoidCount,
     predatorCount: initialPredatorCount,
     Pest_Immigration: 0,
-    Parasitoid_Immigration: 0,
+    yieldDamage: 0,
   }] as WeekData[],
 });
 
@@ -133,7 +133,7 @@ export default function App() {
       parasitoidCount: 'Parasitoids (Wasps)',
       predatorCount: 'Predators (Spiders)',
       Pest_Immigration: 'BPH Immigration Rate',
-      Parasitoid_Immigration: 'Parasitoid Immigration Rate',
+      yieldDamage: 'Yield Damage',
     };
 
     // Get the keys in the defined order to ensure columns are consistent
@@ -252,7 +252,7 @@ export default function App() {
     parasitoidCount: initialParasitoidCount,
     predatorCount: initialPredatorCount,
     Pest_Immigration: 0, 
-    Parasitoid_Immigration: 0,
+    yieldDamage: 0,
   };
 
   useEffect(() => {
@@ -346,8 +346,8 @@ export default function App() {
           mutantPestCount: mutantStart,
           parasitoidCount: parasitoidStart,
           predatorCount: predatorStart,
-          Pest_Immigration: 0, // No immigration yet for the first calculated step
-          Parasitoid_Immigration: nextWeekParasitoidImmigration
+          Pest_Immigration: pestStart, // pests appear on week 1
+          yieldDamage: initialLayers
         };
       setSimulationHistory((prevHistory) => [...prevHistory, weekOneData]);
       setLayersToRemove(initialLayers);
@@ -427,18 +427,6 @@ export default function App() {
     const nextParasitoidCount = survivingParasitoids * parasitoidReproductionRate + outsideParasitoids;
     const nextPredatorCount = survivingPredators * predatorReproductionRate;
 
-    // 1. Create the new data object (nextWeekData is defined here)
-    const nextWeekData: WeekData = {
-      week: weekNumber + 1,
-      normalPestCount: nextPestCount,
-      mutantPestCount: nextMutantPestCount,
-      parasitoidCount: nextParasitoidCount,
-      predatorCount: nextPredatorCount,
-      // Ensure these values are also calculated in your logic:
-      Pest_Immigration: outsidePests, 
-      Parasitoid_Immigration: outsideParasitoids, 
-    };
-
     setPestCount(nextPestCount);
     setMutantPestCount(nextMutantPestCount);
     setParasitoidCount(nextParasitoidCount);
@@ -450,6 +438,18 @@ export default function App() {
     const newLayersToRemove = Math.ceil(baseDamageInLayers * fieldDamage);
 
     setLayersToRemove(newLayersToRemove);
+
+  //Create data object (nextWeekData is defined here)
+    const nextWeekData: WeekData = {
+      week: weekNumber + 1,
+      normalPestCount: nextPestCount,
+      mutantPestCount: nextMutantPestCount,
+      parasitoidCount: nextParasitoidCount,
+      predatorCount: nextPredatorCount,
+      // Ensure these values are also calculated in your logic:
+      Pest_Immigration: outsidePests, 
+      yieldDamage: newLayersToRemove, 
+    };
 
     // Append the new data to the history array
     setSimulationHistory((prevHistory) => [...prevHistory, nextWeekData]);
