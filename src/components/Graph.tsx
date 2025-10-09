@@ -34,7 +34,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     const isImmigrationChart = payload.some((p: any) => p.dataKey.includes('Immigration'));
 
     return (
-      <div className="bg-white p-3 border border-gray-300 rounded-lg shadow-xl text-sm">
+      <div className="bg-card p-3 border border-gray-300 rounded-lg shadow-xl text-sm">
         <p className="font-bold text-gray-700 mb-1">Week {label}</p>
         {payload.map((p: any, index: number) => (
           <p key={index} style={{ color: p.color }} className="flex justify-between">
