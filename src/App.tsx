@@ -11,6 +11,29 @@ import { FlowerField } from "./components/FlowerField";
 import { PopulationGraph, WeekData } from "./components/Graph"; 
 import { Header } from "./components/ui/dialog";
 
+interface AppState {
+  // SIMULATION COUNTS
+  pestCount: number;
+  mutantPestCount: number;
+  parasitoidCount: number;
+  predatorCount: number;
+  // GAME/CHOICE STATE
+  weekNumber: number;
+  layersToRemove: number;
+  layersRemoved: number;
+  pesticideSprayCount: number;
+  isGameOver: boolean;
+  totalPestsEaten: number;
+  pesticideScheduled: boolean;
+  flower: boolean;
+  averageOutsidePests: number;
+  averageOutsideMutantPests: number;
+  averageOutsideParasitoids: number;
+  // GRID & HISTORY
+  buttonStates: ButtonState[];
+  simulationHistory: WeekData[];
+}
+
 type Tip = {
   title: string;
   content: string;
@@ -18,6 +41,8 @@ type Tip = {
 
 // Simulation Constants
 const cropsPerLayer = 30;
+const GRID_WIDTH = 10;
+const GRID_HEIGHT = 10;
 const initialPestCount = Math.random() * 198;
 const initialMutantPestCount = Math.random() * 2;
 const initialParasitoidCount = Math.random() * 25;
@@ -40,10 +65,60 @@ const pestConsumptionRate = 0.8;
 const parasitoidConsumptionRate = 1.1;
 const predatorConsumptionRate = 2.5;
 
-export default function App() {
-  const [simulationHistory, setSimulationHistory] = useState<WeekData[]>([]); 
- // --- Paste this updated function inside the 'App' functional component ---
+//initial state for replay without reloading the page
+const getInitialState = (): AppState => ({
+  //simulation counts
+  weekNumber: 0,
+  pestCount: initialPestCount,
+  mutantPestCount: initialMutantPestCount,
+  parasitoidCount: initialParasitoidCount,
+  predatorCount: initialPredatorCount,
+  averageOutsidePests: AVERAGE_OUTSIDE_PESTS,
+  averageOutsideMutantPests: AVERAGE_OUTSIDE_MUTANT_PESTS,
+  averageOutsideParasitoids: 0,
+  layersToRemove: 0,
+  layersRemoved: 0,
+  pesticideSprayCount: 0,
+  isGameOver: false,
+  totalPestsEaten: 0,
+  pesticideScheduled: false,
+  flower: false,
+  buttonStates: new Array(GRID_HEIGHT * GRID_WIDTH).fill(0) as ButtonState[],
+  simulationHistory: [{
+    week: 0,
+    normalPestCount: initialPestCount,
+    mutantPestCount: initialMutantPestCount,
+    parasitoidCount: initialParasitoidCount,
+    predatorCount: initialPredatorCount,
+    Pest_Immigration: 0,
+    Parasitoid_Immigration: 0,
+  }] as WeekData[],
+});
 
+export default function App() {
+  const initialValues = getInitialState();
+  const [simulationHistory, setSimulationHistory] = useState<WeekData[]>( initialValues.simulationHistory);
+  const handleReplay = () => {
+    const resetValues = getInitialState();
+    setWeekNumber(resetValues.weekNumber);
+    setPestCount(resetValues.pestCount);
+    setMutantPestCount(resetValues.mutantPestCount);
+    setParasitoidCount(resetValues.parasitoidCount);
+    setPredatorCount(resetValues.predatorCount);
+    setAverageOutsidePests(resetValues.averageOutsidePests);
+    setAverageOutsideMutantPests(resetValues.averageOutsideMutantPests);
+    setAverageOutsideParasitoids(resetValues.averageOutsideParasitoids);
+    setLayersToRemove(resetValues.layersToRemove);
+    setLayersRemoved(resetValues.layersRemoved);
+    setPesticideSprayCount(resetValues.pesticideSprayCount);
+    setIsGameOver(resetValues.isGameOver);
+    setTotalPestsEaten(resetValues.totalPestsEaten);
+    setPesticideScheduled(resetValues.pesticideScheduled);
+    setFlower(resetValues.flower);
+    setButtonStates(resetValues.buttonStates);
+    setSimulationHistory(resetValues.simulationHistory);
+    setIsGameOver(false);
+ };
   const downloadDataCSV = () => {
     if (simulationHistory.length === 0) {
       alert("No simulation data to download yet.");
@@ -118,8 +193,8 @@ export default function App() {
   const [averageOutsideMutantPests, setAverageOutsideMutantPests] = useState(AVERAGE_OUTSIDE_MUTANT_PESTS);
   const [averageOutsideParasitoids, setAverageOutsideParasitoids] = useState(0);
 
-  const gridWidth = 10;
-  const gridHeight = 10;
+  const gridWidth = GRID_WIDTH;
+  const gridHeight = GRID_HEIGHT;
   const [buttonStates, setButtonStates] = useState<ButtonState[]>(
     new Array(gridWidth * gridHeight).fill(0)
   );
@@ -600,6 +675,7 @@ export default function App() {
           weekNumber={weekNumber}
           onShare={() => alert("Score copied to clipboard!")}
           onClose={() => setIsGameOver(false)}
+          onReplay={handleReplay}
         />
       </div>
     </div>

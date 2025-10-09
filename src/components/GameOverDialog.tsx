@@ -16,6 +16,7 @@ interface GameOverDialogProps {
   weekNumber: number;
   onShare: () => void;
   onClose: () => void;
+  onReplay: () => void;
 }
 
 export function GameOverDialog({
@@ -25,6 +26,7 @@ export function GameOverDialog({
   weekNumber,
   onShare,
   onClose,
+  onReplay,
 }: GameOverDialogProps) {
   const shareText = `I finished the game with a score of ${score.toFixed(
     2
@@ -60,10 +62,12 @@ Try to beat me here: https://s-poony.github.io/Rice-Clicker/`;
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={handleShare}>Share Score</Button>
-          <Button variant="outline" onClick={onClose}>
-            Close
-          </Button>
+          <Button variant= "outline" onClick={handleShare}>
+            Share Score</Button>
+          <Button onClick={onReplay}>
+          Replay</Button>
+          <Button variant= "outline" onClick={onClose}>
+            Close </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
