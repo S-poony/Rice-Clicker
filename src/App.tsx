@@ -18,14 +18,16 @@ type Tip = {
 
 // Simulation Constants
 const cropsPerLayer = 30;
-const initialPestCount = Math.random() * 400;
-const initialMutantPestCount = Math.random() * 40;
-const initialParasitoidCount = Math.random() * 20;
-const initialPredatorCount = Math.random() * 10;
-const flowerBoost = 2;
-const perillaParasitoidBoost = 2;
+const initialPestCount = Math.random() * 198;
+const initialMutantPestCount = Math.random() * 2;
+const initialParasitoidCount = Math.random() * 25;
+const initialPredatorCount = Math.random() * 7;
+const FLOWER_IMMIGRATION_BOOST = 3.5; // discuss with scientists for accuracy
+const FLOWER_POPULATION_BOOST = 2;
 const MUTANT_PEST_REPRODUCTION_RATE = (2 * 7) / 10.42;
 const PEST_REPRODUCTION_RATE = (2 * 7) / 10.42;
+const AVERAGE_OUTSIDE_PESTS = 9.8;
+const AVERAGE_OUTSIDE_MUTANT_PESTS = 0.2;
 const parasitoidReproductionRate = 1.25;
 const predatorReproductionRate = 1.1;
 const ReproductionBoost = 1.6;
@@ -111,8 +113,9 @@ export default function App() {
   const [totalPestsEaten, setTotalPestsEaten] = useState(0);
   const [pesticideScheduled, setPesticideScheduled] = useState(false);
 
-  const [perilla, setPerilla] = useState(false);
-  const [averageOutsidePests, setAverageOutsidePests] = useState(6);
+  const [flower, setFlower] = useState(false);
+  const [averageOutsidePests, setAverageOutsidePests] = useState(AVERAGE_OUTSIDE_PESTS);
+  const [averageOutsideMutantPests, setAverageOutsideMutantPests] = useState(AVERAGE_OUTSIDE_MUTANT_PESTS);
   const [averageOutsideParasitoids, setAverageOutsideParasitoids] = useState(0);
 
   const gridWidth = 10;
@@ -222,18 +225,17 @@ export default function App() {
   };
 
   // IMPORTANT: this handler now accepts one parameter per method to pest control. Keep in mind states are synchronous.
-  const handlePestChoice = (pesticideApplied: boolean, perillaApplied = false) => {
-    console.log("handlePestChoice called:", { weekNumber, pesticideApplied, perillaApplied, layersToRemove, averageOutsideParasitoids,  }); //debug
+  const handlePestChoice = (pesticideApplied: boolean, flowerApplied = false) => {
+    console.log("handlePestChoice called:", { weekNumber, pesticideApplied, flowerApplied: flowerApplied, layersToRemove, averageOutsideParasitoids,  }); //debug
     // SETUP PHASE
     if (weekNumber === 0) {
       let boostedInitialParasitoidCount = initialParasitoidCount;
       let nextWeekParasitoidImmigration = 0;
-      if (perillaApplied) {
-        setPerilla(true);
-        boostedInitialParasitoidCount *= flowerBoost;
-        const perillaBoostValue = perillaParasitoidBoost;
-        setAverageOutsideParasitoids(perillaBoostValue);
-        nextWeekParasitoidImmigration = Math.random() * perillaBoostValue * 2;
+      if (flowerApplied) {
+        setFlower(true);
+        boostedInitialParasitoidCount *= FLOWER_POPULATION_BOOST;
+        setAverageOutsideParasitoids(FLOWER_IMMIGRATION_BOOST);
+        nextWeekParasitoidImmigration = Math.random() * FLOWER_IMMIGRATION_BOOST * 2;
       }
       if (pesticideApplied) {
         setPesticideScheduled(true);
@@ -303,8 +305,10 @@ export default function App() {
     // --- Start of Simulation Logic ---
     // 1. Determine reproduction rates based on pesticide history
     let pestReproductionRate = PEST_REPRODUCTION_RATE
-    let mutantPestReproductionRate = MUTANT_PEST_REPRODUCTION_RATE
+    let mutantPestReproductionRate = MUTANT_PEST_REPRODUCTION_RATE  
+    
     if (sprayedCount > 0) {
+      //intended logic: pesticide applied only once boost reproduction permanently
       pestReproductionRate = ReproductionBoost;
       mutantPestReproductionRate = MutantPestReproductionBoost;
     }
@@ -340,10 +344,11 @@ export default function App() {
     // 4. Calculate new population from survivors and reproduction
 
     const outsidePests = Math.random() * averageOutsidePests * 2;
+    const outsideMutantPests = Math.random() * averageOutsideMutantPests * 2;
     const outsideParasitoids = Math.random() * averageOutsideParasitoids * 2;
 
     const nextPestCount = survivingPests * pestReproductionRate + outsidePests;
-    const nextMutantPestCount = survivingMutants * mutantPestReproductionRate;
+    const nextMutantPestCount = survivingMutants * mutantPestReproductionRate + outsideMutantPests;
     const nextParasitoidCount = survivingParasitoids * parasitoidReproductionRate + outsideParasitoids;
     const nextPredatorCount = survivingPredators * predatorReproductionRate;
 
@@ -392,7 +397,7 @@ export default function App() {
           zIndex: -20 
         }} 
       />
-      {perilla && <FlowerField />} 
+      {flower && <FlowerField />} 
       <div style={{ position: 'relative', zIndex: 10 }}>
         {weekNumber>0 && (
           <Popup
@@ -502,7 +507,7 @@ export default function App() {
                           <PestControl
                             onSpray={() => handlePestChoice(true)}
                             onPass={() => handlePestChoice(false)}
-                            onPerilla={() => handlePestChoice(false, true)}
+                            onFlower={() => handlePestChoice(false, true)}
                             weekNumber={weekNumber}
                           />
                         </div>

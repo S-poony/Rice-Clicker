@@ -4,11 +4,11 @@ import { Button } from "./ui/button";
 interface PestControlProps {
   weekNumber: number;
   onSpray: () => void;
-  onPerilla: () => void;
+  onFlower: () => void;
   onPass: () => void;
 }
 
-export function PestControl({ weekNumber, onSpray, onPass, onPerilla }: PestControlProps) {
+export function PestControl({ weekNumber, onSpray, onPass, onFlower: onFlower }: PestControlProps) {
   const isSetupWeek = weekNumber === 0;
 
   return (
@@ -23,7 +23,7 @@ export function PestControl({ weekNumber, onSpray, onPass, onPerilla }: PestCont
         {isSetupWeek ? (
           <>
             <div style={{ flex: "1 1 120px", minWidth: 0 }}>
-              <Button onClick={() => { console.log("PestControl: Plant clicked"); onPerilla(); }} variant="outline" style={{ width: "100%" } as any}>
+              <Button onClick={() => { console.log("PestControl: Plant clicked"); onFlower(); }} variant="outline" style={{ width: "100%" } as any}>
                 <h3 style={{ margin: 0, fontSize: 14 }}>Plant flowers</h3>
               </Button>
             </div>
