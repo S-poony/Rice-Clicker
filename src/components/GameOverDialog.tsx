@@ -28,15 +28,42 @@ export function GameOverDialog({
   onClose,
   onReplay,
 }: GameOverDialogProps) {
+  const gameURL = "https://s-poony.github.io/Rice-Clicker/";
   const shareText = `I finished the game with a score of ${score.toFixed(
     2
   )} and used pesticide ${pesticideSprayCount} times! 
   
-Try to beat me here: https://s-poony.github.io/Rice-Clicker/`;
+Try to beat me here: ${gameURL}`;
 
-  const handleShare = () => {
-    navigator.clipboard.writeText(shareText);
-    onShare();
+   // 1. Convert to an async function to use the promise-based navigator.share()
+  const handleShare = async () => {
+    // Data object for the Web Share API
+    const shareData: ShareData = {
+        title: 'Rice Clicker Game Over!',
+        text: shareText,
+        url: gameURL,
+    };
+    // 2. Check if the Web Share API is available in the user's browser
+    if (navigator.share) {
+      try {
+        // 3. Use the native sharing dialog
+        await navigator.share(shareData);
+        // This is called if the share dialog is successfully launched and data is passed.
+        onShare();
+      } catch (err) {
+        const error = err as Error; 
+        if (error.name === 'AbortError') {
+            console.log('Abort error');
+        } else {
+            console.error('Error sharing:', err);
+        }
+      }
+    } else {
+      // 4. FALLBACK: If Web Share API is not supported, fall back to copying to clipboard
+      navigator.clipboard.writeText(shareText);
+      onShare();
+      //alert "copied to clipboard" appears by itself
+    }
   };
 
   const description =
