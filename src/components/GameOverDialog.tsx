@@ -24,6 +24,7 @@ export function GameOverDialog({
   score,
   pesticideSprayCount,
   weekNumber,
+
   onShare,
   onClose,
   onReplay,
@@ -67,9 +68,7 @@ Try to beat me here: ${gameURL}`;
   };
 
   const description =
-    weekNumber >= 10
-      ? "You have completed all 10 weeks. Here is your final score."
-      : `You have completed ${weekNumber} weeks. Here is your final score.`;
+      `You have completed all ${weekNumber} weeks. Here is your final score.`;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

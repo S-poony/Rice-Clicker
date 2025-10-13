@@ -40,6 +40,7 @@ type Tip = {
 };
 
 // Simulation Constants
+const HARVEST_WEEK = 12;
 const cropsPerLayer = 30;
 const GRID_WIDTH = 10;
 const GRID_HEIGHT = 10;
@@ -287,7 +288,7 @@ export default function App() {
   }, []); // Runs only once on mount
 
   useEffect(() => {
-    if (weekNumber === 10 && layersToRemove === 0) {
+    if (weekNumber === HARVEST_WEEK && layersToRemove === 0) {
       setIsGameOver(true);
     }
     const allRed = buttonStates.every((state) => state === 2);
@@ -367,7 +368,7 @@ export default function App() {
       setPesticideScheduled(false); // Reset after use
     }
 
-    if (weekNumber >= 10) {
+    if (weekNumber >= HARVEST_WEEK) {
       setIsGameOver(true);
       return;
     }
