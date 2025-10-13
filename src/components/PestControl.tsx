@@ -44,7 +44,7 @@ export function PestControl({ weekNumber, onSpray, onPass, onFlower: onFlower }:
 
         <div style={{ flex: "1 1 120px", minWidth: 0 }}>
           <Button onClick={() => { console.log("PestControl: Pass clicked"); onPass(); }} variant="outline" style={{ width: "100%" } as any}>
-            <h3 style={{ margin: 0, fontSize: 14 }}>Pass</h3>
+            <h3 style={{ margin: 0, fontSize: 14 }}>Wait</h3>
           </Button>
         </div>
       </div>
