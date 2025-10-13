@@ -41,13 +41,14 @@ type Tip = {
 
 // Simulation Constants
 const HARVEST_WEEK = 12;
+const POPULATION_RANDOMNESS = 0;
 const cropsPerLayer = 30;
 const GRID_WIDTH = 10;
 const GRID_HEIGHT = 10;
-const initialPestCount = Math.random() * 198;
-const initialMutantPestCount = Math.random() * 2;
-const initialParasitoidCount = Math.random() * 25;
-const initialPredatorCount = Math.random() * 7;
+const initialPestCount = 198;
+const initialMutantPestCount = 2;
+const initialParasitoidCount = 25;
+const initialPredatorCount = 7;
 const FLOWER_IMMIGRATION_BOOST = 3.5; // discuss with scientists for accuracy
 const FLOWER_POPULATION_BOOST = 2;
 const MUTANT_PEST_REPRODUCTION_RATE = (2 * 7) / 10.42;
@@ -281,7 +282,8 @@ export default function App() {
     1,
     MAX_FIELD_YIELD / currentFieldYield
   );
-  const score = (6 * greenCells + 3 * yellowCells + brownCells) * weekNumber;
+  const scoreInPoints = GREEN_YIELD * greenCells + YELLOW_YIELD * yellowCells + BROWN_YIELD * brownCells;
+  const score = (scoreInPoints * 5) / 300; // score in tons of rice
 
   useEffect(() => {
     // This effect is now empty as initial calculation is handled in the setup phase

@@ -80,7 +80,7 @@ Try to beat me here: ${gameURL}`;
         <div className="space-y-4 py-4">
           <div className="flex justify-between items-center">
             <p className="font-medium">Final Yield:</p>
-            <p className="text-2xl font-bold">{score} tons</p>
+            <p className="text-2xl font-bold">{score.toFixed(2)} tons</p>
           </div>
           <div className="flex justify-between items-center">
             <p className="font-medium">Total Pesticide Sprays:</p>
