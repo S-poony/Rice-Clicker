@@ -24,6 +24,7 @@ export interface WeekData {
   predatorCount: number;
   Pest_Immigration: number;
   yieldDamage: number;
+  pesticideScheduled: boolean;
 }
 
 // --- Custom Tooltip Component ---

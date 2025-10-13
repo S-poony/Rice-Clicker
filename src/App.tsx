@@ -134,6 +134,7 @@ export default function App() {
       predatorCount: 'Predators (Spiders)',
       Pest_Immigration: 'BPH Immigration Rate',
       yieldDamage: 'Yield Damage',
+      pesticideScheduled: 'Pesticide Sprayed This Week',
     };
 
     // Get the keys in the defined order to ensure columns are consistent
@@ -253,6 +254,7 @@ export default function App() {
     predatorCount: initialPredatorCount,
     Pest_Immigration: 0, 
     yieldDamage: 0,
+    pesticideScheduled: false,
   };
 
   useEffect(() => {
@@ -347,7 +349,8 @@ export default function App() {
           parasitoidCount: parasitoidStart,
           predatorCount: predatorStart,
           Pest_Immigration: pestStart, // pests appear on week 1
-          yieldDamage: initialLayers
+          yieldDamage: initialLayers,
+          pesticideScheduled: pesticideApplied,
         };
       setSimulationHistory((prevHistory) => [...prevHistory, weekOneData]);
       setLayersToRemove(initialLayers);
@@ -446,9 +449,9 @@ export default function App() {
       mutantPestCount: nextMutantPestCount,
       parasitoidCount: nextParasitoidCount,
       predatorCount: nextPredatorCount,
-      // Ensure these values are also calculated in your logic:
       Pest_Immigration: outsidePests, 
       yieldDamage: newLayersToRemove, 
+      pesticideScheduled: isPesticideAppliedThisTurn,
     };
 
     // Append the new data to the history array
