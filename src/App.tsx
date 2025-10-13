@@ -533,7 +533,7 @@ export default function App() {
           />
           {weekNumber > 1 && (
             <p style={{ fontSize: '0.875rem', color: '#6b7280' /* text-sm text-muted-foreground */ }}>
-              BPH eaten by wasps and spiders: {totalPestsEaten} <br />
+              BPH killed by wasps and spiders: {totalPestsEaten} <br />
             </p>
           )}
           
