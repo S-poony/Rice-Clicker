@@ -9,7 +9,8 @@ import {
   Legend,
   ResponsiveContainer,
   LineChart,
-  Line
+  Line,
+  ReferenceLine //for pesticide line
 } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
@@ -55,8 +56,31 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 // --- Population Graph Component (Main Export) ---
 
-export  const PopulationGraph = ({ data, onDownloadData }: { data: WeekData[], onDownloadData: () => void }) => {
+export const PopulationGraph = ({ data, onDownloadData }: { data: WeekData[], onDownloadData: () => void }) => {
   const chartRef = useRef<HTMLDivElement>(null);
+
+    // {pesticideMarkers} DISABLED BECAUSE RENDER ISSUES
+    // 1. Filter the data to find the week numbers where pesticide was scheduled 
+    // const sprayedWeeks = data
+    //   .filter(d => d.pesticideScheduled && d.week > 0)
+    //   .map(d => d.week);
+
+    // // 2. Create an array of ReferenceLine components to insert into the charts
+    // const pesticideMarkers = sprayedWeeks.map((week) => (
+    //   <ReferenceLine
+    //     key={`pesticide-${week}`}
+    //     x={week}
+    //     stroke="#ff0000" // Red color
+    //     strokeDasharray="4 4" // Dashed line
+    //     label={{ 
+    //       value: 'Pesticide', 
+    //       position: 'top', 
+    //       fill: '#ff0000', 
+    //       offset: 10,
+    //       fontSize: 10 
+    //     }}
+    //   />
+    // ));
 
   // --- Rendered Chart Structure ---
 
@@ -122,6 +146,9 @@ export  const PopulationGraph = ({ data, onDownloadData }: { data: WeekData[], o
               />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ paddingTop: '10px' }} />
+              
+              {/* {pesticideMarkers} <-- INSERTION */}
+
               <Area 
                   type="monotone" 
                   dataKey="mutantPestCount" 
@@ -181,6 +208,9 @@ export  const PopulationGraph = ({ data, onDownloadData }: { data: WeekData[], o
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                
+                {/* {pesticideMarkers} */}
+
                 <Line 
                     type="monotone" 
                     dataKey="yieldDamage" 
