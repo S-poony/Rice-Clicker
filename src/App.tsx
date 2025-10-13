@@ -67,14 +67,35 @@ const pestConsumptionRate = 0.8;
 const parasitoidConsumptionRate = 1.1;
 const predatorConsumptionRate = 2.5;
 
+const randomize = (baseCount: number, randomnessFactor: number): number => {
+  if (randomnessFactor === 0) return baseCount;
+  
+  // Generate a random multiplier between (1 - randomnessFactor) and (1 + randomnessFactor)
+  const minMultiplier = 1 - randomnessFactor;
+  const maxMultiplier = 1 + randomnessFactor;
+  
+  const randomMultiplier = Math.random() * (maxMultiplier - minMultiplier) + minMultiplier;
+  
+  // Return the randomized count, rounded to the nearest integer and ensuring it's not negative
+  return Math.max(0, Math.round(baseCount * randomMultiplier));
+};
+
 //initial state for replay without reloading the page
-const getInitialState = (): AppState => ({
+const getInitialState = (): AppState => {
+
+  // 2. Calculate the randomized initial values here:
+  const randomizedPestCount = randomize(initialPestCount, POPULATION_RANDOMNESS);
+  const randomizedMutantPestCount = randomize(initialMutantPestCount, POPULATION_RANDOMNESS);
+  const randomizedParasitoidCount = randomize(initialParasitoidCount, POPULATION_RANDOMNESS);
+  const randomizedPredatorCount = randomize(initialPredatorCount, POPULATION_RANDOMNESS);
+
+return ({
   //simulation counts
   weekNumber: 0,
-  pestCount: initialPestCount,
-  mutantPestCount: initialMutantPestCount,
-  parasitoidCount: initialParasitoidCount,
-  predatorCount: initialPredatorCount,
+  pestCount: randomizedPestCount,
+  mutantPestCount: randomizedMutantPestCount,
+  parasitoidCount: randomizedParasitoidCount,
+  predatorCount: randomizedPredatorCount,
   averageOutsidePests: AVERAGE_OUTSIDE_PESTS,
   averageOutsideMutantPests: AVERAGE_OUTSIDE_MUTANT_PESTS,
   averageOutsideParasitoids: 0,
@@ -90,12 +111,13 @@ const getInitialState = (): AppState => ({
     week: 0,
     normalPestCount: 0,//pests appear only on week 1
     mutantPestCount: 0,//pests appear only on week 1
-    parasitoidCount: initialParasitoidCount,
-    predatorCount: initialPredatorCount,
+    parasitoidCount: randomizedParasitoidCount,
+    predatorCount: randomizedPredatorCount,
     Pest_Immigration: 0,
     yieldDamage: 0,
   }] as WeekData[],
 });
+}
 
 export default function App() {
   const initialValues = getInitialState();
