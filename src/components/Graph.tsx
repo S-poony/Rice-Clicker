@@ -145,7 +145,7 @@ export const PopulationGraph = ({ data, onDownloadData }: { data: WeekData[], on
                   stroke="#9ca3af"
               />
               <Tooltip content={<CustomTooltip />} />
-              <Legend wrapperStyle={{ paddingTop: '10px' }} />
+              <Legend wrapperStyle={{ paddingTop: '10px' }} iconType='square' />
               
               {/* {pesticideMarkers} <-- INSERTION */}
 
@@ -207,7 +207,7 @@ export const PopulationGraph = ({ data, onDownloadData }: { data: WeekData[], on
                     stroke="#9ca3af"
                 />
                 <Tooltip content={<CustomTooltip />} />
-                <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                <Legend wrapperStyle={{ paddingTop: '10px' }} iconType='circle'/>
                 
                 {/* {pesticideMarkers} */}
 
