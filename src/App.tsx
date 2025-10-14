@@ -593,12 +593,6 @@ export default function App() {
                           }}
                           data-pest-inner="true"
                         >
-                          <PestControl
-                            onSpray={() => handlePestChoice(true)}
-                            onPass={() => handlePestChoice(false)}
-                            onFlower={() => handlePestChoice(false, true)}
-                            weekNumber={weekNumber}
-                          />
                         </div>
                       </div>
                     )}
@@ -622,7 +616,7 @@ export default function App() {
                         }}
                         data-grid-inner="true"
                       >
-                       <CardHeader/>
+                       
                         <ClickableGrid
                           width={gridWidth}
                           height={gridHeight}
@@ -646,6 +640,9 @@ export default function App() {
                               <LayerControls
                                 layersToRemove={layersToRemove}
                                 weekNumber={weekNumber}
+                                onSpray={() => handlePestChoice(true)}
+                                onPass={() => handlePestChoice(false)}
+                                onFlower={() => handlePestChoice(false, true)}
                               />
                           </div>
                       </ClickableGrid>

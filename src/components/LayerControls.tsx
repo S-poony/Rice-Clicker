@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
+import {PestControl} from "./PestControl.tsx";
 
 interface LayerControlsProps {
   layersToRemove: number;
   weekNumber: number;
+  //props for pest control
+  onSpray: () => void;
+  onFlower: ()  => void;
+  onPass: () => void;
 }
 
 // LayerControls.tsx
@@ -11,6 +16,9 @@ interface LayerControlsProps {
 export function LayerControls({
   layersToRemove,
   weekNumber,
+  onSpray,
+  onFlower,
+  onPass
 }: LayerControlsProps) {
   return (
     <div 
@@ -25,7 +33,12 @@ export function LayerControls({
         </div>
         <p>Layers to remove: {layersToRemove}</p>
       </div>
-      
+       <PestControl 
+        weekNumber={weekNumber}
+        onSpray={onSpray}
+        onFlower={onFlower}
+        onPass={onPass}
+      />
     </div>
   );
 }
