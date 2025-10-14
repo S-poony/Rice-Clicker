@@ -9,6 +9,7 @@ interface ClickableGridProps {
   onDecrementLayers: () => void;
   buttonStates: ButtonState[];
   setButtonStates: (states: ButtonState[]) => void;
+  children?: React.ReactNode; //for layers to remove
 }
 
 export function ClickableGrid({
@@ -18,6 +19,7 @@ export function ClickableGrid({
   onDecrementLayers,
   buttonStates,
   setButtonStates,
+  children,
 }: ClickableGridProps) {
   // Reset grid if dimensions change
   useEffect(() => {
@@ -77,14 +79,12 @@ export function ClickableGrid({
 
   return (
     <div className="flex flex-col gap-4">
-      {/* 
-        w-full -> allow grid to use full width of container
-        max-w-[640px] -> caps width on large screens so grid doesn't get huge
-        mx-auto -> horizontally center the grid
-        p-4 bg-muted rounded-lg box-border -> preserve original styling, box-border prevents overflow issues
-      */}
+      {}
+      <div style={{ width: '100%', boxSizing: 'border-box' }}>
+        {children}
+      </div>
       <div
-        className="grid gap-1 p-4 bg-muted rounded-lg box-border w-full max-w-[640px] mx-auto"
+        className="grid gap-1 p-4 bg-muted rounded-lg box-border w-full mx-auto" // max-w-[640px] has been removed
         style={{
           gridTemplateColumns: `repeat(${width}, minmax(0, 1fr))`,
         }}

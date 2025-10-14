@@ -541,11 +541,7 @@ export default function App() {
             </p>
             
           </div>
-        
-          <LayerControls
-            layersToRemove={layersToRemove}
-            weekNumber={weekNumber}
-          />
+
           {weekNumber > 1 && (
             <p style={{ fontSize: '0.875rem', color: '#6b7280' /* text-sm text-muted-foreground */ }}>
               BPH killed by wasps and spiders: {totalPestsEaten} <br />
@@ -592,7 +588,7 @@ export default function App() {
                             width: "100%",
                             maxWidth: 640,
                             boxSizing: "border-box",
-                            minWidth: 0, // <-- empêche le contenu d'imposer une largeur minimale
+                            minWidth: 0,
                             padding: "6px 8px",
                           }}
                           data-pest-inner="true"
@@ -634,8 +630,26 @@ export default function App() {
                           onDecrementLayers={handleDecrementLayers}
                           buttonStates={buttonStates}
                           setButtonStates={setButtonStates}
-                        />
-                      </div>
+                        >
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                width: "100%",
+                                boxSizing: "border-box",
+                                padding: "6px 8px",
+                                maxWidth: 650,
+                                margin: "0 auto",
+                              }}
+                            >
+                              <LayerControls
+                                layersToRemove={layersToRemove}
+                                weekNumber={weekNumber}
+                              />
+                          </div>
+                      </ClickableGrid>
+                    </div>
+                 
                     </div>
 
                     <h3 style={{ fontSize: '1.25rem', fontWeight: '600', letterSpacing: '-0.025em', paddingTop: '0.5rem' /* text-xl font-semibold tracking-tight pt-2 */ }}>Your Field</h3>
