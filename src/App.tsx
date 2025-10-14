@@ -630,6 +630,7 @@ export default function App() {
                           onDecrementLayers={handleDecrementLayers}
                           buttonStates={buttonStates}
                           setButtonStates={setButtonStates}
+                          flower={flower}
                         >
                             <div
                               style={{

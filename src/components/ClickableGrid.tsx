@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-
+import { FlowerBorders } from "./FlowerBorders";
 export type ButtonState = 0 | 1 | 2 | 3; // 0: green, 1: yellow, 2: brown, 3: red (now invisible )
 
 interface ClickableGridProps {
@@ -10,6 +10,7 @@ interface ClickableGridProps {
   buttonStates: ButtonState[];
   setButtonStates: (states: ButtonState[]) => void;
   children?: React.ReactNode; //for layers to remove
+  flower: boolean; //whether to show flower borders
 }
 
 export function ClickableGrid({
@@ -20,6 +21,7 @@ export function ClickableGrid({
   buttonStates,
   setButtonStates,
   children,
+  flower,
 }: ClickableGridProps) {
   // Reset grid if dimensions change
   useEffect(() => {
@@ -80,15 +82,23 @@ export function ClickableGrid({
   return (
     <div className="flex flex-col gap-4">
       {}
-      <div style={{ width: '100%', boxSizing: 'border-box' }}>
         {children}
-      </div>
       <div
         className="grid gap-1 p-4 bg-muted rounded-lg shadow-xl box-border w-full mx-auto" // max-w-[640px] has been removed
         style={{
           gridTemplateColumns: `repeat(${width}, minmax(0, 1fr))`,
+          position: "relative",
+          zIndex: 1, // Ensure grid is above flower borders
         }}
       >
+        {flower && (
+          <FlowerBorders 
+            // Use the max-width of the container (e.g., 450px from App.tsx or 640px from class)
+            // Let's assume 450px from the parent's maxWidth for consistent sizing:
+            gridWidth={450} 
+            gridHeight={450} 
+          />
+        )}
         {normalizedStates.map((state, index) => {
           // state === 3 => invisible/dead: keep DOM element but visually hidden and non-interactive
           const invisible = state === 3;

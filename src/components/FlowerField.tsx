@@ -4,12 +4,10 @@ import { Flower } from './Flower';
 interface FlowerInfo {
   id: number;
   style: React.CSSProperties;
-  color: string;
 }
 
 export const FlowerField: React.FC = () => {
   const [flowers, setFlowers] = useState<FlowerInfo[]>([]);
-  const flowerColors = ['#FFC0CB', '#FFB6C1', '#FF69B4', '#FF1493', '#DB7093'];
 
   useEffect(() => {
     const generateFlowers = () => {
@@ -18,7 +16,6 @@ export const FlowerField: React.FC = () => {
       for (let i = 0; i < numFlowers; i++) {
         const finalOpacity = Math.random() * 0.6 + 0.2;
         const finalTransform = `scale(${Math.random() * 0.4 + 0.6})`;
-        const color = flowerColors[Math.floor(Math.random() * flowerColors.length)];
 
         newFlowers.push({
           id: i,
@@ -29,7 +26,6 @@ export const FlowerField: React.FC = () => {
             opacity: .3,
             zIndex: 1, // Move behind content
           } as React.CSSProperties,
-          color,
         });
       }
       setFlowers(newFlowers);
