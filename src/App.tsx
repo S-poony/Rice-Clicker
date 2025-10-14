@@ -11,6 +11,34 @@ import { FlowerField } from "./components/FlowerField";
 import { PopulationGraph, WeekData } from "./components/Graph"; 
 import { Header } from "./components/ui/dialog";
 
+// Simulation Constants
+const HARVEST_WEEK = 12;
+const POPULATION_RANDOMNESS = .5; // 0 = no randomness, 0.1 = ±10%, 0.2 = ±20%, etc.
+const cropsPerLayer = 30;
+const GRID_WIDTH = 10;
+const GRID_HEIGHT = 10;
+const initialPestCount = 198;
+const initialMutantPestCount = 2;
+const initialParasitoidCount = 25;
+const initialPredatorCount = 7;
+const FLOWER_IMMIGRATION_BOOST = 3.5; // discuss with scientists for accuracy
+const FLOWER_POPULATION_BOOST = 2;
+const MUTANT_PEST_REPRODUCTION_RATE = (2 * 7) / 10.42;
+const PEST_REPRODUCTION_RATE = (2 * 7) / 10.42;
+const AVERAGE_OUTSIDE_PESTS = 9.8;
+const AVERAGE_OUTSIDE_MUTANT_PESTS = 0.2;
+const parasitoidReproductionRate = 1.25;
+const predatorReproductionRate = 1.1;
+const ReproductionBoost = 1.6;
+const MutantPestReproductionBoost = 1.8;
+const pestSurvivalRate = 0.3;
+const parasitoidSurvivalRate = 0.3;
+const predatorSurvivalRate = 0.5;
+const MutantPestPesticideSurvivalRate = 1;
+const pestConsumptionRate = 0.8;
+const parasitoidConsumptionRate = 1.1;
+const predatorConsumptionRate = 2.5;
+
 interface AppState {
   // SIMULATION COUNTS
   pestCount: number;
@@ -39,33 +67,7 @@ type Tip = {
   content: string;
 };
 
-// Simulation Constants
-const HARVEST_WEEK = 12;
-const POPULATION_RANDOMNESS = 0;
-const cropsPerLayer = 30;
-const GRID_WIDTH = 10;
-const GRID_HEIGHT = 10;
-const initialPestCount = 198;
-const initialMutantPestCount = 2;
-const initialParasitoidCount = 25;
-const initialPredatorCount = 7;
-const FLOWER_IMMIGRATION_BOOST = 3.5; // discuss with scientists for accuracy
-const FLOWER_POPULATION_BOOST = 2;
-const MUTANT_PEST_REPRODUCTION_RATE = (2 * 7) / 10.42;
-const PEST_REPRODUCTION_RATE = (2 * 7) / 10.42;
-const AVERAGE_OUTSIDE_PESTS = 9.8;
-const AVERAGE_OUTSIDE_MUTANT_PESTS = 0.2;
-const parasitoidReproductionRate = 1.25;
-const predatorReproductionRate = 1.1;
-const ReproductionBoost = 1.6;
-const MutantPestReproductionBoost = 1.8;
-const pestSurvivalRate = 0.3;
-const parasitoidSurvivalRate = 0.3;
-const predatorSurvivalRate = 0.5;
-const MutantPestPesticideSurvivalRate = 1;
-const pestConsumptionRate = 0.8;
-const parasitoidConsumptionRate = 1.1;
-const predatorConsumptionRate = 2.5;
+
 
 const randomize = (baseCount: number, randomnessFactor: number): number => {
   if (randomnessFactor === 0) return baseCount;
@@ -264,22 +266,10 @@ export default function App() {
   };
 
   // Simulation state
-  const [pestCount, setPestCount] = useState(initialPestCount);
-  const [mutantPestCount, setMutantPestCount] = useState(initialMutantPestCount);
-  const [parasitoidCount, setParasitoidCount] = useState(initialParasitoidCount);
-  const [predatorCount, setPredatorCount] = useState(initialPredatorCount);
-
-  // Initialize simulationHistory with the Week 0 data
-  const initialWeek0Data: WeekData = {
-    week: 0,
-    normalPestCount: initialPestCount,
-    mutantPestCount: initialMutantPestCount,
-    parasitoidCount: initialParasitoidCount,
-    predatorCount: initialPredatorCount,
-    Pest_Immigration: 0, 
-    yieldDamage: 0,
-    pesticideScheduled: false,
-  };
+  const [pestCount, setPestCount] = useState(initialValues.pestCount);
+  const [mutantPestCount, setMutantPestCount] = useState(initialValues.mutantPestCount);
+  const [parasitoidCount, setParasitoidCount] = useState(initialValues.parasitoidCount);
+  const [predatorCount, setPredatorCount] = useState(initialValues.predatorCount);
 
   useEffect(() => {
     console.log({
@@ -331,7 +321,7 @@ export default function App() {
     console.log("handlePestChoice called:", { weekNumber, pesticideApplied, flowerApplied: flowerApplied, layersToRemove, averageOutsideParasitoids,  }); //debug
     // SETUP PHASE
     if (weekNumber === 0) {
-      let boostedInitialParasitoidCount = initialParasitoidCount;
+      let boostedInitialParasitoidCount = parasitoidCount;
       let nextWeekParasitoidImmigration = 0;
       if (flowerApplied) {
         setFlower(true);
@@ -343,10 +333,10 @@ export default function App() {
         setPesticideScheduled(true);
       }
       
-      let pestStart = initialPestCount;
-      let mutantStart = initialMutantPestCount;
+      let pestStart = pestCount;
+      let mutantStart = mutantPestCount;
       let parasitoidStart = boostedInitialParasitoidCount;
-      let predatorStart = initialPredatorCount;
+      let predatorStart = predatorCount;
 
       if (pesticideApplied) {
         // pests are not affected this turn because they appear on week 1
