@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FlowerBorders } from "./FlowerBorders";
 export type ButtonState = 0 | 1 | 2 | 3; // 0: green, 1: yellow, 2: brown, 3: red (now invisible )
 
@@ -23,6 +23,33 @@ export function ClickableGrid({
   children,
   flower,
 }: ClickableGridProps) {
+
+  //get grid dimensions for flower borders
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [gridDimensions, setGridDimensions] = useState({ width: 0, height: 0 });
+  useEffect(() => {
+    const currentRef = gridRef.current;
+    if (!currentRef) return;
+
+    // Observer callback: updates state whenever dimensions change
+    const observer = new ResizeObserver(entries => {
+      // We only care about the dimensions of the element we're observing
+      for (let entry of entries) {
+        setGridDimensions({
+          width: entry.contentRect.width,
+          height: entry.contentRect.height
+        });
+      }
+    });
+        // Start observing the grid div
+    observer.observe(currentRef);
+
+    // Cleanup: stop observing when the component unmounts
+    return () => {
+      observer.unobserve(currentRef);
+    };
+  }, []); // Empty dependency array ensures this runs once
+
   // Reset grid if dimensions change
   useEffect(() => {
     const totalButtons = width * height;
@@ -72,6 +99,7 @@ export function ClickableGrid({
     }
   };
 
+
   // total buttons (defensive)
   const total = width * height;
   const normalizedStates =
@@ -84,6 +112,7 @@ export function ClickableGrid({
       {}
         {children}
       <div
+        ref = {gridRef}
         className="grid gap-1 p-4 bg-muted rounded-lg shadow-xl box-border w-full mx-auto" // max-w-[640px] has been removed
         style={{
           gridTemplateColumns: `repeat(${width}, minmax(0, 1fr))`,
@@ -95,8 +124,8 @@ export function ClickableGrid({
           <FlowerBorders 
             // Use the max-width of the container (e.g., 450px from App.tsx or 640px from class)
             // Let's assume 450px from the parent's maxWidth for consistent sizing:
-            gridWidth={450} 
-            gridHeight={450} 
+            gridWidth={gridDimensions.width} 
+            gridHeight={gridDimensions.height} 
           />
         )}
         {normalizedStates.map((state, index) => {

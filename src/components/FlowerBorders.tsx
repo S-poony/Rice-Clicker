@@ -27,7 +27,7 @@ const FlowerLine: React.FC<{ count: number; isVertical: boolean; flowerSize: num
 };
 
 export const FlowerBorders: React.FC<FlowerBordersProps> = ({ gridWidth, gridHeight }) => {
-  const flowerScale = 101; // overall scale factor
+  const flowerScale = 115; // overall scale factor
   const flowerSize = 25 * (flowerScale / 100); // scale flower size proportionally
 
   const containerStyle: React.CSSProperties = {
@@ -52,10 +52,10 @@ export const FlowerBorders: React.FC<FlowerBordersProps> = ({ gridWidth, gridHei
 
   return (
     <div style={containerStyle}>
-      <div style={lineStyles.top}><FlowerLine count={10} isVertical={false} flowerSize={flowerSize} /></div>
-      <div style={lineStyles.bottom}><FlowerLine count={10} isVertical={false} flowerSize={flowerSize} /></div>
-      <div style={lineStyles.left}><FlowerLine count={10} isVertical={true} flowerSize={flowerSize} /></div>
-      <div style={lineStyles.right}><FlowerLine count={10} isVertical={true} flowerSize={flowerSize} /></div>
+      <div style={lineStyles.top}><FlowerLine count={gridWidth/40} isVertical={false} flowerSize={flowerSize} /></div>
+      <div style={lineStyles.bottom}><FlowerLine count={gridWidth/40} isVertical={false} flowerSize={flowerSize} /></div>
+      <div style={lineStyles.left}><FlowerLine count={gridHeight/40} isVertical={true} flowerSize={flowerSize} /></div>
+      <div style={lineStyles.right}><FlowerLine count={gridHeight/40} isVertical={true} flowerSize={flowerSize} /></div>
     </div>
   );
 };
