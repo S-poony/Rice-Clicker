@@ -38,6 +38,7 @@ export function LayerControls({
         onSpray={onSpray}
         onFlower={onFlower}
         onPass={onPass}
+        layersToRemove={layersToRemove}// pass layersToRemove down to PestControl for disabled logic
       />
     </div>
   );
