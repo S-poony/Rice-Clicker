@@ -658,8 +658,6 @@ export default function App() {
 
             </div>
 
-            
-
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' /* space-y-6 */ }}>
               {weekNumber > 0 && (
               <PopulationGraph 

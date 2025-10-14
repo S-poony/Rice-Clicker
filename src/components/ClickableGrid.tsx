@@ -84,7 +84,7 @@ export function ClickableGrid({
         {children}
       </div>
       <div
-        className="grid gap-1 p-4 bg-muted rounded-lg box-border w-full mx-auto" // max-w-[640px] has been removed
+        className="grid gap-1 p-4 bg-muted rounded-lg shadow-xl box-border w-full mx-auto" // max-w-[640px] has been removed
         style={{
           gridTemplateColumns: `repeat(${width}, minmax(0, 1fr))`,
         }}

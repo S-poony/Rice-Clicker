@@ -14,7 +14,7 @@ export function LayerControls({
 }: LayerControlsProps) {
   return (
     <div 
-      className="flex flex-col gap-4 p-6 bg-card rounded-lg border"
+      className="flex flex-col gap-4 p-6 bg-card rounded-lg shadow-xl border"
       style={{ width: '100%' }}
     >
       <div className="flex flex-col gap-2">
