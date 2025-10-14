@@ -27,8 +27,8 @@ const FlowerLine: React.FC<{ count: number; isVertical: boolean; flowerSize: num
 };
 
 export const FlowerBorders: React.FC<FlowerBordersProps> = ({ gridWidth, gridHeight }) => {
-  const flowerScale = 115; // overall scale factor
-  const flowerSize = 25 * (flowerScale / 100); // scale flower size proportionally
+  const flowerScale = 120; // overall scale factor
+  const flowerSize = 40 * (flowerScale / 100); // scale flower size proportionally
 
   const containerStyle: React.CSSProperties = {
     position: 'absolute',
