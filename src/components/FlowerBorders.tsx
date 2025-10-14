@@ -6,7 +6,11 @@ interface FlowerBordersProps {
   gridHeight: number;
 }
 
-const FlowerLine: React.FC<{ count: number; isVertical: boolean; flowerSize: number }> = ({ count, isVertical, flowerSize }) => {
+const FlowerLine: React.FC<{ count: number; isVertical: boolean; flowerSize: number }> = ({
+  count,
+  isVertical,
+  flowerSize,
+}) => {
   const lineStyle: React.CSSProperties = isVertical
     ? { display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', height: '100%' }
     : { display: 'flex', justifyContent: 'space-evenly', width: '100%' };
@@ -19,7 +23,7 @@ const FlowerLine: React.FC<{ count: number; isVertical: boolean; flowerSize: num
 
   return (
     <div style={lineStyle}>
-      {Array.from({ length: count }).map((_, i) => (
+      {Array.from({ length: Math.max(1, Math.round(count)) }).map((_, i) => (
         <Flower key={i} style={flowerStyle} color="#e5989b" />
       ))}
     </div>
@@ -27,35 +31,46 @@ const FlowerLine: React.FC<{ count: number; isVertical: boolean; flowerSize: num
 };
 
 export const FlowerBorders: React.FC<FlowerBordersProps> = ({ gridWidth, gridHeight }) => {
-  const flowerScale = 120; // overall scale factor
-  const flowerSize = 40 * (flowerScale / 100); // scale flower size proportionally
+  // --- Dynamic scaling factors ---
+  // Scale flowers proportionally to the smaller grid dimension
+  const baseSize = Math.min(gridWidth, gridHeight);
+  const scaleFactor = baseSize / 300; // adjust this constant to tune global size
+  
+  const flowerSize = 32 * scaleFactor; // flower visual size
+  const containerPadding = flowerSize / 1.1; // consistent offset for even borders
 
+  // Compute number of flowers dynamically
+  const spacing = 35 * scaleFactor; // average spacing between flowers
+  const horizontalCount = Math.max(3, Math.floor(gridWidth / spacing));
+  const verticalCount = Math.max(3, Math.floor(gridHeight / spacing));
+
+  // --- Styles ---
   const containerStyle: React.CSSProperties = {
     position: 'absolute',
     pointerEvents: 'none',
     zIndex: 5,
     top: '50%',
     left: '50%',
-    width: `${gridWidth * (flowerScale / 100)}px`,
-    height: `${gridHeight * (flowerScale / 100)}px`,
+    width: `${gridWidth}px`,
+    height: `${gridHeight}px`,
     transform: 'translate(-50%, -50%)',
   };
 
   const borderThickness = `${flowerSize}px`;
 
   const lineStyles: { [key: string]: React.CSSProperties } = {
-    top: { position: 'absolute', top: 0, left: 0, right: 0, height: borderThickness },
-    bottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: borderThickness },
-    left: { position: 'absolute', top: 0, bottom: 0, left: 0, width: borderThickness },
-    right: { position: 'absolute', top: 0, bottom: 0, right: 0, width: borderThickness },
+    top: { position: 'absolute', top: -containerPadding, left: 0, right: 0, height: borderThickness },
+    bottom: { position: 'absolute', bottom: -containerPadding, left: 0, right: 0, height: borderThickness },
+    left: { position: 'absolute', top: 0, bottom: 0, left: -containerPadding, width: borderThickness },
+    right: { position: 'absolute', top: 0, bottom: 0, right: -containerPadding, width: borderThickness },
   };
 
   return (
     <div style={containerStyle}>
-      <div style={lineStyles.top}><FlowerLine count={gridWidth/40} isVertical={false} flowerSize={flowerSize} /></div>
-      <div style={lineStyles.bottom}><FlowerLine count={gridWidth/40} isVertical={false} flowerSize={flowerSize} /></div>
-      <div style={lineStyles.left}><FlowerLine count={gridHeight/40} isVertical={true} flowerSize={flowerSize} /></div>
-      <div style={lineStyles.right}><FlowerLine count={gridHeight/40} isVertical={true} flowerSize={flowerSize} /></div>
+      <div style={lineStyles.top}><FlowerLine count={horizontalCount} isVertical={false} flowerSize={flowerSize} /></div>
+      <div style={lineStyles.bottom}><FlowerLine count={horizontalCount} isVertical={false} flowerSize={flowerSize} /></div>
+      <div style={lineStyles.left}><FlowerLine count={verticalCount} isVertical={true} flowerSize={flowerSize} /></div>
+      <div style={lineStyles.right}><FlowerLine count={verticalCount} isVertical={true} flowerSize={flowerSize} /></div>
     </div>
   );
 };
