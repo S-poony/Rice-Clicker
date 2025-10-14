@@ -541,12 +541,6 @@ export default function App() {
             </p>
             
           </div>
-
-          {weekNumber > 1 && (
-            <p style={{ fontSize: '0.875rem', color: '#6b7280' /* text-sm text-muted-foreground */ }}>
-              BPH killed by wasps and spiders: {totalPestsEaten} <br />
-            </p>
-          )}
           
           <div 
             style={{ 
@@ -563,7 +557,7 @@ export default function App() {
                 gap: '1rem' /* space-y-4 */ 
               }}
             >
-                <Card style={{ backgroundColor: 'white' }}>
+                <Card style={{ backgroundColor: 'white' }} >
                   <CardContent 
                     style={{ 
                       display: 'flex', 

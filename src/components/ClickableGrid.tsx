@@ -111,6 +111,7 @@ export function ClickableGrid({
     <div className="flex flex-col gap-4">
       {}
         {children}
+        <br />
       <div
         ref = {gridRef}
         className="grid gap-1 p-4 bg-muted rounded-lg shadow-xl box-border w-full mx-auto" // max-w-[640px] has been removed
