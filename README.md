@@ -10,7 +10,7 @@ This game simulates the population dynamics of rice pests and their natural enem
 ---
 ## Key Features
 
-![sceenshot of the game](img/RiceClicker_2025-10-15.png)
+![sceenshot of the game](img/RiceClicker.png)
 
 - **Interactive Simulation:** Experience a week-by-week simulation of pest and beneficial insect population dynamics.
     
