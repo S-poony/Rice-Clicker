@@ -200,6 +200,43 @@ export default function App() {
     link.click();
     document.body.removeChild(link);
   };
+  
+// Define the breakpoint for 'md' (medium screen)
+  const MD_BREAKPOINT = 768;
+
+  // --- Responsive State Hook ---
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= MD_BREAKPOINT);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLargeScreen(window.innerWidth >= MD_BREAKPOINT);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
+  // load tips once from public/TipnpsList.json
+  useEffect(() => {
+    fetch("TipsList.json", { cache: "no-cache" })
+      .then((res) => res.json())
+      .then((data: Tip[]) => {
+        if (Array.isArray(data)) {
+          setTips(data);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load tips:", err);
+      });
+  }, []);
+  const showRandomTip = () => {
+    if (tips.length === 0) {
+      setCurrentTip({ title: "No tips", content: "No tips available." });
+    } else {
+      const randomIndex = Math.floor(Math.random() * tips.length);
+      setCurrentTip(tips[randomIndex]);
+    }
+    setTipsOpen(true);
+  };
 
   const [insectDiversityOpen, setInsectDiversityOpen] = useState<boolean>(false);
 
@@ -226,44 +263,6 @@ export default function App() {
     new Array(gridWidth * gridHeight).fill(0)
   );
 
-// Define the breakpoint for 'md' (medium screen)
-  const MD_BREAKPOINT = 768;
-
-  // --- Responsive State Hook ---
-  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= MD_BREAKPOINT);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsLargeScreen(window.innerWidth >= MD_BREAKPOINT);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-  
-  // load tips once from public/TipnpsList.json
-  useEffect(() => {
-    fetch("TipsList.json", { cache: "no-cache" })
-      .then((res) => res.json())
-      .then((data: Tip[]) => {
-        if (Array.isArray(data)) {
-          setTips(data);
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to load tips:", err);
-      });
-  }, []);
-
-  const showRandomTip = () => {
-    if (tips.length === 0) {
-      setCurrentTip({ title: "No tips", content: "No tips available." });
-    } else {
-      const randomIndex = Math.floor(Math.random() * tips.length);
-      setCurrentTip(tips[randomIndex]);
-    }
-    setTipsOpen(true);
-  };
 
   // Simulation state
   const [pestCount, setPestCount] = useState(initialValues.pestCount);
@@ -322,12 +321,10 @@ export default function App() {
     // SETUP PHASE
     if (weekNumber === 0) {
       let boostedInitialParasitoidCount = parasitoidCount;
-      let nextWeekParasitoidImmigration = 0;
       if (flowerApplied) {
         setFlower(true);
         boostedInitialParasitoidCount *= FLOWER_POPULATION_BOOST;
-        setAverageOutsideParasitoids(FLOWER_IMMIGRATION_BOOST);
-        nextWeekParasitoidImmigration = Math.random() * FLOWER_IMMIGRATION_BOOST * 2;
+        setAverageOutsideParasitoids(Math.random() * FLOWER_IMMIGRATION_BOOST * 2);
       }
       if (pesticideApplied) {
         setPesticideScheduled(true);
