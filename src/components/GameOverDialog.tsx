@@ -71,7 +71,22 @@ Try to beat me here: ${gameURL}`;
       `You have completed all ${weekNumber} weeks. Here is your final score.`;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+      <Dialog 
+        open={isOpen} 
+        // Add ': boolean' to explicitly define the type of the parameter
+        onOpenChange={(newOpenState: boolean) => {
+          // If the dialog attempts to close (newOpenState === false)
+          if (!newOpenState) {
+            // Block the closing action by doing nothing.
+            // This disables clicks outside the dialog and the ESC key.
+            return; 
+          }
+          // If the dialog attempts to open (which is already controlled by 'isOpen'), 
+          // you can optionally call onClose, but the primary goal is blocking closure.
+          // Since 'isOpen' controls the open state, we can safely just return here too.
+          return;
+        }}
+      >
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Game Over!</DialogTitle>
@@ -92,8 +107,6 @@ Try to beat me here: ${gameURL}`;
             Share Score</Button>
           <Button onClick={onReplay}>
           Replay</Button>
-          <Button variant= "outline" onClick={onClose}>
-            Close </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
