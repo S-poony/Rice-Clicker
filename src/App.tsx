@@ -588,30 +588,6 @@ export default function App() {
                       paddingTop: '1.5rem' // pt-6
                     }}
                   >
-                    {layersToRemove === 0 && !isGameOver && (
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          width: "100%",
-                          boxSizing: "border-box",
-                        }}
-                        data-pest-root="true"
-                      >
-                        <div
-                          style={{
-                            width: "100%",
-                            maxWidth: 640,
-                            boxSizing: "border-box",
-                            minWidth: 0,
-                            padding: "6px 8px",
-                          }}
-                          data-pest-inner="true"
-                        >
-                        </div>
-                      </div>
-                    )}
-
                     <div
                       style={{
                         display: "flex",
