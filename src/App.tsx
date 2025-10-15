@@ -13,6 +13,7 @@ import { Header } from "./components/ui/dialog";
 
 // Simulation Constants
 const HARVEST_WEEK = 12;
+const INVASION_WEEK = 2;
 const POPULATION_RANDOMNESS = .5; // 0 = no randomness, 0.1 = ±10%, 0.2 = ±20%, etc.
 const cropsPerLayer = 30;
 const GRID_WIDTH = 10;
@@ -94,8 +95,8 @@ const getInitialState = (): AppState => {
 return ({
   //simulation counts
   weekNumber: 0,
-  pestCount: randomizedPestCount,
-  mutantPestCount: randomizedMutantPestCount,
+  pestCount: 0, //pests appear on INVASION_WEEK
+  mutantPestCount: 0, //pests appear on INVASION_WEEK
   parasitoidCount: randomizedParasitoidCount,
   predatorCount: randomizedPredatorCount,
   averageOutsidePests: AVERAGE_OUTSIDE_PESTS,
@@ -111,8 +112,8 @@ return ({
   buttonStates: new Array(GRID_HEIGHT * GRID_WIDTH).fill(0) as ButtonState[],
   simulationHistory: [{
     week: 0,
-    normalPestCount: 0,//pests appear only on week 1
-    mutantPestCount: 0,//pests appear only on week 1
+    normalPestCount: 0,//pests appear on INVASION_WEEK
+    mutantPestCount: 0,//pests appear on INVASION_WEEK
     parasitoidCount: randomizedParasitoidCount,
     predatorCount: randomizedPredatorCount,
     Pest_Immigration: 0,
@@ -319,57 +320,72 @@ export default function App() {
   const handlePestChoice = (pesticideApplied: boolean, flowerApplied = false) => {
     console.log("handlePestChoice called:", { weekNumber, pesticideApplied, flowerApplied: flowerApplied, layersToRemove, averageOutsideParasitoids,  }); //debug
     // SETUP PHASE
-    if (weekNumber === 0) {
-      let boostedInitialParasitoidCount = parasitoidCount;
+    // IMPORTANT: This block now simulates all weeks up to INVASION_WEEK - 1.
+  if (weekNumber === 0) {
+      // 1. Initial Beneficial Insect Setup
+      let currentParasitoid = parasitoidCount;
+      let currentPredator = predatorCount;
+
       if (flowerApplied) {
-        setFlower(true);
-        boostedInitialParasitoidCount *= FLOWER_POPULATION_BOOST;
-        setAverageOutsideParasitoids(Math.random() * FLOWER_IMMIGRATION_BOOST * 2);
-      }
-      if (pesticideApplied) {
-        setPesticideScheduled(true);
+          setFlower(true);
+          currentParasitoid *= FLOWER_POPULATION_BOOST;
+          setAverageOutsideParasitoids(Math.random() * FLOWER_IMMIGRATION_BOOST * 2);
       }
       
-      let pestStart = pestCount;
-      let mutantStart = mutantPestCount;
-      let parasitoidStart = boostedInitialParasitoidCount;
-      let predatorStart = predatorCount;
-
+      // Schedule pesticide for Week 1 (if applied now)
       if (pesticideApplied) {
-        // pests are not affected this turn because they appear on week 1
-        pestStart *= 1
-        mutantStart *= 1
-        parasitoidStart *= parasitoidSurvivalRate;
-        predatorStart *= predatorSurvivalRate;
-        setPesticideSprayCount((prev) => prev + 1);
+          setPesticideScheduled(true);
+          setPesticideSprayCount((prev) => prev + 1); // Increment count now
       }
+      
+      const newHistory: WeekData[] = [];
+      
+      // 2. Simulate Pre-Invasion Weeks (Week 1 up to INVASION_WEEK - 1)
+      for (let w = 1; w < INVASION_WEEK; w++) {
+          let isPesticideAppliedThisWeek = pesticideApplied && w === 1; // Only spray if scheduled and it's Week 1
+          
+          // a. Calculate Survival (Pests are 0, only beneficials affected)
+          const parasitoidSurvival = isPesticideAppliedThisWeek ? parasitoidSurvivalRate : 1;
+          const predatorSurvival = isPesticideAppliedThisWeek ? predatorSurvivalRate : 1;
+          //no reproduction if no pests, check with scientists
+          currentParasitoid *= parasitoidSurvival;
+          currentPredator *= predatorSurvival;
 
-      // Now, start the infestation for week 1
-      setPestCount(pestStart);
-      setMutantPestCount(mutantStart);
-      setParasitoidCount(parasitoidStart);
-      setPredatorCount(predatorStart);
+          // b. Calculate Reproduction (Only beneficials)
+          const nextParasitoid = currentParasitoid * parasitoidReproductionRate;
+          const nextPredator = currentPredator * predatorReproductionRate;
 
-      const pestTotal = pestStart + mutantStart;
-      const cropsEaten = pestTotal * pestConsumptionRate;
-      const initialLayers = Math.ceil(cropsEaten / cropsPerLayer);
+          newHistory.push({
+              week: w,
+              normalPestCount: 0,
+              mutantPestCount: 0,
+              parasitoidCount: nextParasitoid,
+              predatorCount: nextPredator,
+              Pest_Immigration: 0,
+              yieldDamage: 0, // no pests = no damage (for now at least)
+              pesticideScheduled: isPesticideAppliedThisWeek,
+          });
 
-        const weekOneData: WeekData = {
-          week: 1, // This is the data after the initial choices and the first 'turn'
-          normalPestCount: pestStart,
-          mutantPestCount: mutantStart,
-          parasitoidCount: parasitoidStart,
-          predatorCount: predatorStart,
-          Pest_Immigration: pestStart, // pests appear on week 1
-          yieldDamage: initialLayers,
-          pesticideScheduled: pesticideApplied,
-        };
-      setSimulationHistory((prevHistory) => [...prevHistory, weekOneData]);
-      setLayersToRemove(initialLayers);
+          // Update populations for the next week's calculation
+          currentParasitoid = nextParasitoid;
+          currentPredator = nextPredator;
+      }
+      
+      // 3. Update State to End of Pre-Invasion Period
+      setPestCount(0); // Still 0 pests
+      setMutantPestCount(0);
+      setParasitoidCount(currentParasitoid);
+      setPredatorCount(currentPredator);
+      
+      setSimulationHistory((prevHistory) => [...prevHistory, ...newHistory]);
+      setLayersToRemove(0);
+      setPesticideScheduled(false); // Reset schedule flag
 
-      setWeekNumber(1);
+      // Set the week number to the last pre-invasion week
+      setWeekNumber(INVASION_WEEK - 1); 
       return;
     }
+  
 
     let isPesticideAppliedThisTurn = pesticideApplied;
     if (weekNumber === 1 && pesticideScheduled) {
@@ -432,13 +448,21 @@ export default function App() {
     const survivingPredators = predatorCount * predatorSurvival;
 
     // 4. Calculate new population from survivors and reproduction
-
+    const isPestInvasionWeek = weekNumber === (INVASION_WEEK - 1); // Trigger invasion when moving to INVASION_WEEK
     const outsidePests = Math.random() * averageOutsidePests * 2;
     const outsideMutantPests = Math.random() * averageOutsideMutantPests * 2;
     const outsideParasitoids = Math.random() * averageOutsideParasitoids * 2;
 
-    const nextPestCount = survivingPests * pestReproductionRate + outsidePests;
-    const nextMutantPestCount = survivingMutants * mutantPestReproductionRate + outsideMutantPests;
+    let nextPestCount = survivingPests * pestReproductionRate + outsidePests;
+    let nextMutantPestCount = survivingMutants * mutantPestReproductionRate + outsideMutantPests;
+
+    // INVASION LOGIC: If this is the week before the invasion, override the pest counts
+    // with the randomized initial invasion amount.
+    if (isPestInvasionWeek) {
+        nextPestCount = randomize(initialPestCount, POPULATION_RANDOMNESS);
+        nextMutantPestCount = randomize(initialMutantPestCount, POPULATION_RANDOMNESS);
+    }
+
     const nextParasitoidCount = survivingParasitoids * parasitoidReproductionRate + outsideParasitoids;
     const nextPredatorCount = survivingPredators * predatorReproductionRate;
 
@@ -489,7 +513,7 @@ export default function App() {
       />
       {flower && <FlowerField />} 
       <div style={{ position: 'relative', zIndex: 10 }}>
-        {weekNumber>0 && (
+        {weekNumber == INVASION_WEEK && (
           <Popup
           title="Your field is infested!"
           content={
