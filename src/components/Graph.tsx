@@ -103,7 +103,7 @@ export const PopulationGraph = ({ data, onDownloadData }: { data: WeekData[], on
 
       <CardContent className="flex flex-col w-full h-full space-y-4 p-0 pt-4">
 
-        {/* --- 1. Population Totals (Pests and mutants are stacked) --- */}
+        {/* --- 1. Population Totals --- */}
         <div className="flex-1 w-full min-h-[300px]">
           <h4 className="text-base font-semibold text-gray-700 mb-2">Population Counts</h4>
           <ResponsiveContainer width="100%" height="90%">
@@ -151,23 +151,20 @@ export const PopulationGraph = ({ data, onDownloadData }: { data: WeekData[], on
 
               <Area 
                   type="monotone" 
-                  dataKey="mutantPestCount" 
-                  stackId={1}
-                  stroke="#8d0075ff" 
-                  fill="url(#colorMutant)" 
-                  name="Mutant Pests" 
-                  strokeWidth={2}
-              />
-              <Area 
-                  type="monotone" 
                   dataKey="normalPestCount" 
-                  stackId={1}
                   stroke="#ff2c2cff" 
                   fill="url(#colorNormal)" 
                   name="Pests" 
                   strokeWidth={2}
               />
-              
+              <Area 
+                  type="monotone" 
+                  dataKey="mutantPestCount" 
+                  stroke="#8d0075ff" 
+                  fill="url(#colorMutant)" 
+                  name="Resistant Pests" 
+                  strokeWidth={2}
+              />
               <Area 
                   type="monotone" 
                   dataKey="parasitoidCount" 

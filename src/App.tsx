@@ -156,7 +156,7 @@ export default function App() {
     const columnMap = {
       week: 'Week',
       normalPestCount: 'BPH (Normal)',
-      mutantPestCount: 'BPH (Mutant)',
+      mutantPestCount: 'BPH (Resistant)',
       parasitoidCount: 'Parasitoids (Wasps)',
       predatorCount: 'Predators (Spiders)',
       Pest_Immigration: 'BPH Immigration Rate',
@@ -347,7 +347,6 @@ export default function App() {
           // a. Calculate Survival (Pests are 0, only beneficials affected)
           const parasitoidSurvival = isPesticideAppliedThisWeek ? parasitoidSurvivalRate : 1;
           const predatorSurvival = isPesticideAppliedThisWeek ? predatorSurvivalRate : 1;
-          //no reproduction if no pests, check with scientists
           currentParasitoid *= parasitoidSurvival;
           currentPredator *= predatorSurvival;
 
