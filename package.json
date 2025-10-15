@@ -61,6 +61,6 @@
             "dev": "vite",
             "build": "vite build",
             "predeploy": "npm run build",
-            "deploy": "gh-pages -d build -b gh-pages -r https://github.com/S-poony/Rice-Clicker.git"
+            "deploy:main": "gh-pages -d build -b gh-pages -r https://github.com/S-poony/Rice-Clicker.git"
       }
 }
