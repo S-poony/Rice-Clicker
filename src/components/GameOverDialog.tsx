@@ -15,8 +15,9 @@ interface GameOverDialogProps {
   pesticideSprayCount: number;
   weekNumber: number;
   onShare: () => void;
-  onClose: () => void;
+  onClose: () => void; //not used anymore
   onReplay: () => void;
+  onDownloadData: () => void;
 }
 
 export function GameOverDialog({
@@ -28,6 +29,7 @@ export function GameOverDialog({
   onShare,
   onClose,
   onReplay,
+  onDownloadData,
 }: GameOverDialogProps) {
   const gameURL = "https://s-poony.github.io/Rice-Clicker/";
   const shareText = `I finished the game with a score of ${score.toFixed(
@@ -105,8 +107,10 @@ Try to beat me here: ${gameURL}`;
         <DialogFooter>
           <Button variant= "outline" onClick={handleShare}>
             Share Score</Button>
+          <Button variant="outline" onClick={onDownloadData}>
+            Download Data</Button>
           <Button onClick={onReplay}>
-          Replay</Button>
+            Replay</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

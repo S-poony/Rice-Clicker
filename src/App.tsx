@@ -695,6 +695,7 @@ export default function App() {
           onShare={() => alert("Score copied to clipboard!")}
           onClose={() => setIsGameOver(false)}
           onReplay={handleReplay}
+          onDownloadData={downloadDataCSV}
         />
       </div>
     </div>
