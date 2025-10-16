@@ -636,14 +636,17 @@ export default function App() {
                               />
                           </div>
                       </ClickableGrid>
+                      
                     </div>
-                 
                     </div>
 
                     <h3 style={{ fontSize: '1.25rem', fontWeight: '600', letterSpacing: '-0.025em', paddingTop: '0.5rem' /* text-xl font-semibold tracking-tight pt-2 */ }}>Your Field</h3>
                   </CardContent>
                 </Card>
-
+                <Scoreboard
+                  score={score}
+                  pesticideSprayCount={pesticideSprayCount}
+                />               
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' /* space-y-6 */ }}>
